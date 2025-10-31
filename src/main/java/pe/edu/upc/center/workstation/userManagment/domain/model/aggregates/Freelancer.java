@@ -6,11 +6,9 @@ import lombok.Getter;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import pe.edu.upc.center.workstation.bookings.domain.model.valueobjects.BookingId;
-import pe.edu.upc.center.workstation.properties.domain.model.valueobjects.SpaceId;
 
 @Entity
 @Table(name = "freelancers")
@@ -23,18 +21,22 @@ public class Freelancer extends AuditableAbstractAggregateRoot<Freelancer>{
 
     @ElementCollection
     @CollectionTable(name = "freelancer_preferences", joinColumns = @JoinColumn(name = "freelancer_id"))
-    @Column(name = "tag", length = 40, nullable = false)
-    private Set<String> preferences = new LinkedHashSet<>();
+    @Column(name = "tag", nullable = false, length = 50)
+    private final Set<String> preferences = new java.util.LinkedHashSet<>();
 
     @ElementCollection
     @CollectionTable(name = "freelancer_bookings", joinColumns = @JoinColumn(name = "freelancer_id"))
-    @AttributeOverride(name = "value", column = @Column(name = "booking_id", nullable = false))
-    private List<BookingId> activeBookings = new ArrayList<>();
+    private final List<BookingId> activeBookings = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "freelancer_favorite_spaces", joinColumns = @JoinColumn(name = "freelancer_id"))
-    @AttributeOverride(name = "value", column = @Column(name = "space_id", nullable = false))
-    private Set<SpaceId> favoriteSpaces = new LinkedHashSet<>();
+    private final Set<Long> favoriteSpaces = new LinkedHashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "freelancer_booked_spaces",
+            joinColumns = @JoinColumn(name = "freelancer_id"))
+    @Column(name = "space_id", nullable = false)
+    private final List<Long> bookedSpaceIds = new ArrayList<>();
 
     protected Freelancer() { }
 
@@ -62,10 +64,21 @@ public class Freelancer extends AuditableAbstractAggregateRoot<Freelancer>{
         activeBookings.removeIf(b -> b.value().equals(bookingId));
     }
 
-    public void addFavoriteSpace(Long spaceId) { favoriteSpaces.add(new SpaceId(spaceId)); }
-    public void removeFavoriteSpace(Long spaceId) { favoriteSpaces.remove(new SpaceId(spaceId)); }
 
-    public Set<String> getPreferences() { return Collections.unmodifiableSet(preferences); }
+    public void addFavoriteSpace(Long spaceId) { favoriteSpaces.add(spaceId); }
+    public void removeFavoriteSpace(Long spaceId) { favoriteSpaces.remove(spaceId); }
+
+    public List<String> getPreferences() { return  List.copyOf(preferences); }
     public List<Long> getActiveBookingIds() { return activeBookings.stream().map(BookingId::value).toList(); }
-    public Set<Long> getFavoriteSpaceIds() { return favoriteSpaces.stream().map(SpaceId::value).collect(Collectors.toUnmodifiableSet()); }
+    public List<Long> getFavoriteSpaceIds() { return List.copyOf(favoriteSpaces); }
+    public List<Long> getBookedSpaceIds() {return List.copyOf(bookedSpaceIds);}
+
+    public void updateUserType(String newUserType) {
+        if (newUserType == null) throw new IllegalArgumentException("userType is required");
+        String value = newUserType.trim();
+        if (value.isEmpty()) throw new IllegalArgumentException("userType is required");
+        if (value.length() > 50) throw new IllegalArgumentException("userType max length is 50");
+        if (value.equals(this.userType)) return;
+        this.userType = value;
+    }
 }
