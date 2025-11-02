@@ -1,0 +1,8 @@
+package pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
+
+@Repository
+public interface FreelancerRepository extends JpaRepository<Freelancer, Long> { }
