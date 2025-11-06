@@ -124,4 +124,12 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
             throw new IllegalArgumentException("Error while removing favorite space: " + e.getMessage());
         }
     }
+
+    @Override
+    public void handle(UpdateFreelancerUserTypeCommand c) {
+        var agg = repository.findById(c.freelancerId())
+                .orElseThrow(() -> new IllegalArgumentException("Freelancer not found: " + c.freelancerId()));
+        agg.updateUserType(c.userType());
+        repository.save(agg);
+    }
 }
