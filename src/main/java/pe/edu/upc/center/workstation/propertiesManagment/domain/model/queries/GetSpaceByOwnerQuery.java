@@ -1,4 +1,6 @@
 package pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries;
 
-public class GetSpaceByOwnerQuery {
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
+
+public record GetSpaceByOwnerQuery(OwnerId ownerId) {
 }

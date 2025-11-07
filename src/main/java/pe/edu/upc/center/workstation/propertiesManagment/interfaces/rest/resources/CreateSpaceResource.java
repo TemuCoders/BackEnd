@@ -1,9 +1,9 @@
-package pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands;
+package pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources;
 
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.Location;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.SpaceType;
 
-public record CreateSpaceCommand(
+public record CreateSpaceResource(
         String name,
         SpaceType spaceType,
         Long ownerId,
@@ -12,4 +12,5 @@ public record CreateSpaceCommand(
         String description,
         Boolean available,
         Location location
-) { }
+) {
+}
