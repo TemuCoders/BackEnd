@@ -6,6 +6,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Owner
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.*;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.OwnerRepository;
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.transform.owners.RegisterSpaceForOwnerCommandFromResourceAssembler;
 
 import java.util.Optional;
 
@@ -81,5 +82,22 @@ public class OwnerCommandServiceImpl implements OwnerCommandService{
         } catch (Exception e) {
             throw new IllegalArgumentException("Error while removing space from owner: " + e.getMessage());
         }
+    }
+
+
+    @Override
+    public void handle(RegisterSpaceForOwnerCommand cmd) {
+        var owner = ownerRepository.findById(cmd.ownerId())
+                .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + cmd.ownerId()));
+        owner.registerSpace(cmd.spaceId());
+        ownerRepository.save(owner);
+    }
+
+    @Override
+    public void handle(RemoveSpaceForOwnerCommand cmd) {
+        var owner = ownerRepository.findById(cmd.ownerId())
+                .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + cmd.ownerId()));
+        owner.removeSpace(cmd.spaceId());
+        ownerRepository.save(owner);
     }
 }
