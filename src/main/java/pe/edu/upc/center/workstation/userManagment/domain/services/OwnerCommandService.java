@@ -2,6 +2,7 @@ package pe.edu.upc.center.workstation.userManagment.domain.services;
 
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Owner;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.*;
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.transform.owners.RegisterSpaceForOwnerCommandFromResourceAssembler;
 
 
 import java.util.Optional;
@@ -12,4 +13,6 @@ public interface OwnerCommandService {
     void handle(DeleteOwnerCommand command);
     void handle(RegisterSpaceToOwnerCommand command);
     void handle(RemoveSpaceFromOwnerCommand command);
+    void handle(RegisterSpaceForOwnerCommand cmd);
+    void handle(RemoveSpaceForOwnerCommand cmd);
 }

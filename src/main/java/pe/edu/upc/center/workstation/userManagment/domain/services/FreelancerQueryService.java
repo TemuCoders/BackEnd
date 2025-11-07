@@ -11,4 +11,5 @@ public interface FreelancerQueryService {
     List<Long> handle(GetFreelancerBookingsQuery query);
     List<Long> handle(GetFreelancerFavoriteSpacesQuery query);
     List<String> handle(GetFreelancerPreferencesQuery query);
+    List<Long> handle(GetFreelancerBookedSpacesQuery q);
 }

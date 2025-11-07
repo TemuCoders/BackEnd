@@ -18,4 +18,5 @@ public interface FreelancerCommandService {
 
     void handle(AddFavoriteSpaceCommand command);
     void handle(RemoveFavoriteSpaceCommand command);
+    void handle(UpdateFreelancerUserTypeCommand c);
 }

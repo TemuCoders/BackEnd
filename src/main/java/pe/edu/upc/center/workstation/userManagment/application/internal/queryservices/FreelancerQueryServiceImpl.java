@@ -48,4 +48,9 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
                 .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + query.freelancerId() + " does not exist"));
         return agg.getPreferences();
     }
+
+    @Override
+    public List<Long> handle(GetFreelancerBookedSpacesQuery q) {
+        return List.of();
+    }
 }
