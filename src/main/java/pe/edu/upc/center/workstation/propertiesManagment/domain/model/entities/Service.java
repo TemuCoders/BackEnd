@@ -1,11 +1,10 @@
-package pe.edu.upc.center.workstation.properties.domain.model.entities;
+package pe.edu.upc.center.workstation.propertiesManagment.domain.model.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 

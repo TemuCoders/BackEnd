@@ -1,4 +1,4 @@
-package pe.edu.upc.center.workstation.properties.domain.model.valueobjects;
+package pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
