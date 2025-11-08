@@ -12,10 +12,17 @@ import pe.edu.upc.center.workstation.propertiesManagment.infrastructure.persiste
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementation of the SpaceQueryService interface.
+ */
 @Service
 public class SpaceQueryServiceImpl implements SpaceQueryService {
     private final SpaceRepository repository;
 
+    /**
+     * Constructor for SpaceQueryServiceImpl
+     * @param repository the repository used to access space data.
+     */
     public SpaceQueryServiceImpl(SpaceRepository repository) {
         this.repository = repository;
     }
@@ -31,7 +38,7 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
     }
 
     @Override
-    public List<Space> handle(GetSpaceByNameQuery query){
+    public Optional<Space> handle(GetSpaceByNameQuery query){
         return repository.findByName(query.name());
     }
 

@@ -67,29 +67,4 @@ public class OwnersController {
         return ResponseEntity.noContent().build();
     }
 
-
-    @PostMapping("/{ownerId}/spaces")
-    public ResponseEntity<OwnerResource> registerSpace(
-            @PathVariable Long ownerId,
-            @RequestBody RegisterSpaceResource resource) {
-        var cmd = RegisterSpaceForOwnerCommandFromResourceAssembler.toCommand(ownerId, resource);
-        ownerCommandService.handle(cmd);
-        var opt = ownerQueryService.handle(new GetOwnerByIdQuery(ownerId));
-        if (opt.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResource(opt.get()));
-    }
-
-    @DeleteMapping("/{ownerId}/spaces/{spaceId}")
-    public ResponseEntity<Void> removeSpace(
-            @PathVariable long ownerId,
-            @PathVariable long spaceId) {
-        ownerCommandService.handle(new RemoveSpaceForOwnerCommand(ownerId, spaceId));
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{ownerId}/spaces")
-    public ResponseEntity<List<Long>> getRegisteredSpaces(@PathVariable Long ownerId) {
-        var ids = ownerQueryService.handle(new GetOwnerRegisteredSpacesQuery(ownerId));
-        return ResponseEntity.ok(ids);
-    }
 }

@@ -33,11 +33,4 @@ public class OwnerQueryServiceImpl implements OwnerQueryService{
 
         return ownerRepository.findByRuc(query.ruc());
     }
-
-    @Override
-    public List<Long> handle(GetOwnerRegisteredSpacesQuery query) {
-        var owner = ownerRepository.findById(query.ownerId())
-                .orElseThrow(() -> new IllegalArgumentException("Owner with id " + query.ownerId() + " does not exist"));
-        return owner.getRegisteredSpaceIds();
-    }
 }
