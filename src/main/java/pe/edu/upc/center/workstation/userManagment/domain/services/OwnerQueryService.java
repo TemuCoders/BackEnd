@@ -9,5 +9,4 @@ public interface OwnerQueryService {
     List<Owner> handle(GetAllOwnersQuery query);
     Optional<Owner> handle(GetOwnerByIdQuery query);
     Optional<Owner> handle(GetOwnerByRucQuery query);
-    List<Long> handle(GetOwnerRegisteredSpacesQuery query);
 }
