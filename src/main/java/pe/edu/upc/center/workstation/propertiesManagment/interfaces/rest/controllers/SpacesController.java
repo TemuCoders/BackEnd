@@ -16,6 +16,8 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.model.aggregates
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.DeleteSpaceCommand;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetAllSpacesQuery;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetSpaceByIdQuery;
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetSpaceByOwnerQuery;
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceCommandService;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceQueryService;
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.assemblers.SpaceAssembler;
@@ -24,6 +26,7 @@ import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resourc
 
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources.SpaceResponse;
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources.UpdateSpaceRequest;
+import pe.edu.upc.center.workstation.servicesManagment.interfaces.rest.resources.ServiceMinimalResponse;
 import pe.edu.upc.center.workstation.shared.interfaces.rest.resources.BadRequestResponse;
 import pe.edu.upc.center.workstation.shared.interfaces.rest.resources.InternalServerErrorResponse;
 import pe.edu.upc.center.workstation.shared.interfaces.rest.resources.NotFoundResponse;
@@ -211,6 +214,25 @@ public class SpacesController {
 
         var spaceResource = SpaceAssembler.toResponseFromEntity(optionalSpace.get());
         return ResponseEntity.ok(spaceResource);
+    }
+
+    @Operation(summary = "Retrieve spaces by owner ID", description = "Retrieves all spaces linked to a specific space")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Spaces retrieved successfully",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = ServiceMinimalResponse.class))))
+    })
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<SpaceMinimalResponse>> getSpacesByOwnerId(@PathVariable Long ownerId) {
+        var owner = new OwnerId(ownerId);
+        var query = new GetSpaceByOwnerQuery(owner);
+        var spaces = this.spaceQueryService.handle(query);
+
+        var responses = spaces.stream()
+                .map(SpaceAssembler::toResponseMinimalFromEntity)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responses);
     }
 
     /**

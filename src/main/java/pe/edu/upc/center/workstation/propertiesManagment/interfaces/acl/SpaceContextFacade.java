@@ -13,6 +13,7 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceQu
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.assemblers.SpaceAssembler;
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources.SpaceResponse;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,6 +53,19 @@ public class SpaceContextFacade {
         return Optional.of(spaceResponse);
     }
 
+    /**
+     * Fetch all spaces linked to a given Space ID.
+     *
+     * @param ownerId the Owner ID
+     * @return a list of spaces linked to that space
+     */
+    public List<SpaceResponse> fetchSpaxcesByOwnerId(OwnerId ownerId) {
+        var getSpaceByOwnerQuery = new  GetSpaceByOwnerQuery(ownerId);
+        var spaces =  spaceQueryService.handle(getSpaceByOwnerQuery);
+        return spaces.stream()
+                .map(SpaceAssembler::toResponseFromEntity)
+                .toList();
+    }
 
     /**
      * Create a new space.
