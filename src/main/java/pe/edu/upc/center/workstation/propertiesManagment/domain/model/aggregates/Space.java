@@ -5,82 +5,108 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.entities.Service;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.Location;
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.CreateSpaceCommand;
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.UpdateSpaceCommand;
+import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.Address;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.SpaceType;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.SpaceId;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+/**
+ * Represent a space in the system.
+ */
 
-
-@Getter
 @Entity
 @Table(name = "spaces")
 public class Space extends AuditableAbstractAggregateRoot<Space> {
 
+    @Getter
     @NotBlank
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
+    @Getter
     @Embedded
-    @NotNull
     @AttributeOverrides({
-            @AttributeOverride(name = "value", column = @Column(name = "owner_id", nullable = false))
+            @AttributeOverride(name = "ownerId",
+                    column = @Column(name = "owner_id", nullable = false))
     })
     private  OwnerId ownerId;
 
-    @Embedded
-    @NotNull
-    private SpaceType spaceType;
+    @Getter
+    @Column(name = "space_type", length = 50, nullable = false)
+    private String spaceType;
 
-    @NotNull
+    @Getter
     @Min(0)
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    @NotNull
+    @Getter
     @Min(0)
     @Column(name = "price", nullable = false)
     private Double price;
 
-    @Column(name = "description", length = 300)
+    @Getter
+    @Column(name = "description", length = 300, nullable = false)
     private String description;
 
+    @Getter
     @NotNull
     @Column(name = "available", nullable = false)
     private Boolean available;
 
+    @Getter
     @Embedded
-    @NotNull
-    private Location location;
+    @AttributeOverrides({
+            @AttributeOverride(name = "street",
+                    column = @Column(name = "address_street", length = 100, nullable = false)),
+            @AttributeOverride(name = "number",
+                    column = @Column(name = "address_number", length = 5, nullable = false)),
+            @AttributeOverride(name = "city",
+                    column = @Column(name = "address_city",length = 20, nullable = false)),
+            @AttributeOverride(name = "postalCode",
+                    column = @Column(name = "address_postal_code",length = 20, nullable = false))
+    })
+    private Address address;
 
-    @ManyToMany
-    @JoinTable(
-            name = "space_services",
-            joinColumns = @JoinColumn(name = "space_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
-    )
-    private final List<Service> services = new ArrayList<>();
 
-
+    /**
+     * Default constructor for JPA.
+     */
     protected Space() {}
 
-    public Space(String name, OwnerId ownerId, SpaceType spaceType,
-                 Integer capacity, Double price, String description,
-                 Boolean available, Location location) {
-        this.name = name;
-        this.ownerId = ownerId;
-        this.spaceType = spaceType;
-        this.capacity = capacity;
-        this.price = price;
-        this.description = description;
-        this.available = available;
-        this.location = location;
+    /**
+     * Constructs a Profile instance from a CreateProfileCommand.
+     *
+     * @param command createProfileCommand containing profile details
+     */
+    public Space(CreateSpaceCommand command) {
+        this.name = command.name();
+        this.ownerId = command.ownerId();
+        this.spaceType = command.spaceType();
+        this.price = command.price();
+        this.capacity = command.capacity();
+        this.description = command.description();
+        this.available = true;
+        this.address = command.address();
+    }
+
+    /**
+     * Update the space with the specified details.
+     *
+     * @param command the UpdateProfileCommand containing the new profile details.
+     */
+    public void updateSpace(UpdateSpaceCommand command) {
+        this.name = command.name();
+        this.spaceType = command.spaceType();
+        this.capacity = command.capacity();
+        this.price = command.price();
+        this.description = command.description();
+        this.address = command.address();
+    }
+
+    public String getFullAddress() {
+        return address.getFullAddress();
     }
 
 }
