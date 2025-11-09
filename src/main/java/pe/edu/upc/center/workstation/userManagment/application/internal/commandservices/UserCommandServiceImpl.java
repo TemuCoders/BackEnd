@@ -1,10 +1,14 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.commandservices;
 
-import org.springframework.stereotype.Service;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.*;
+import pe.edu.upc.center.workstation.shared.domain.exceptions.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.User;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserCommandService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserRepository;
+
+import jakarta.persistence.PersistenceException;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
@@ -17,82 +21,97 @@ public class UserCommandServiceImpl implements UserCommandService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public Long handle(RegisterUserCommand command) {
-        var email = command.email();
-        if (this.userRepository.existsByEmail(email))
-            throw new IllegalArgumentException("User with email " + email + " already exists");
+    public Long handle(RegisterUserCommand c) {
+        var email = new EmailAddress(c.email());
+
+        if (userRepository.existsByEmail(email))
+            throw new IllegalArgumentException("[UserCommandServiceImpl] User with email "
+                    + email + " already exists");
 
         var user = new User(
-                command.name(),
-                command.email(),
-                command.password(),
-                command.photo(),
-                command.age(),
-                command.location()
+                c.name(),
+                email.address(),
+                c.password(),
+                c.photo(),
+                c.age(),
+                c.location()
         );
 
         try {
-            this.userRepository.save(user);
+            userRepository.save(user);
+            return user.getId();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while saving user: " + e.getMessage());
+            throw new PersistenceException("[UserCommandServiceImpl] Error while saving user: " + e.getMessage());
         }
-        return user.getId();
     }
 
     @Override
-    public Optional<User> handle(UpdateUserProfileCommand command) {
-        var userId = (long) command.userId();
+    public Optional<User> handle(UpdateUserProfileCommand c) {
+        var userId = c.userId();
 
-        if (!this.userRepository.existsById(userId))
-            throw new IllegalArgumentException("User with id " + command.userId() + " does not exist");
+        if (!userRepository.existsById(userId))
+            throw new NotFoundIdException(User.class, userId);
 
-        var userToUpdate = this.userRepository.findById(userId).get();
-        userToUpdate.updateProfile(command.name(), command.age(), command.location(), command.photo());
+        var user = userRepository.findById(userId).get();
+        user.updateProfile(c.name(), c.age(), c.location(), c.photo());
 
         try {
-            var updatedUser = this.userRepository.save(userToUpdate);
-            return Optional.of(updatedUser);
+            return Optional.of(userRepository.save(user));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while updating user: " + e.getMessage());
+            throw new PersistenceException("[UserCommandServiceImpl] Error while updating user: " + e.getMessage());
         }
     }
 
     @Override
-    public void handle(DeleteUserAccountCommand command) {
-        var userId = (long) command.userId();
+    public void handle(DeleteUserAccountCommand c) {
+        var userId = c.userId();
 
-        if (!this.userRepository.existsById(userId))
-            throw new IllegalArgumentException("User with id " + command.userId() + " does not exist");
+        if (!userRepository.existsById(userId))
+            throw new NotFoundIdException(User.class, userId);
 
         try {
-            this.userRepository.deleteById(userId);
+            userRepository.deleteById(userId);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while deleting user: " + e.getMessage());
+            throw new PersistenceException("[UserCommandServiceImpl] Error while deleting user: " + e.getMessage());
         }
     }
 
     @Override
-    public void handle(LoginUserCommand command) {
-        var user = this.userRepository.findById((long) command.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + command.userId() + " does not exist"));
+    public void handle(LoginUserCommand c) {
+        var user = userRepository.findById(c.userId())
+                .orElseThrow(() -> new NotFoundIdException(User.class, c.userId()));
         user.login();
         try {
-            this.userRepository.save(user);
+            userRepository.save(user);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while logging in user: " + e.getMessage());
+            throw new PersistenceException("[UserCommandServiceImpl] Error while logging in user: " + e.getMessage());
         }
     }
 
     @Override
-    public void handle(LogoutUserCommand command) {
-        var user = this.userRepository.findById((long) command.userId())
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + command.userId() + " does not exist"));
+    public void handle(LogoutUserCommand c) {
+        var user = userRepository.findById(c.userId())
+                .orElseThrow(() -> new NotFoundIdException(User.class, c.userId()));
         user.logout();
         try {
-            this.userRepository.save(user);
+            userRepository.save(user);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while logging out user: " + e.getMessage());
+            throw new PersistenceException("[UserCommandServiceImpl] Error while logging out user: " + e.getMessage());
         }
+    }
+
+    @Override
+    public Long handle(CreateUserCommand createUserCommand) {
+        if (!createUserCommand.email().address().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"))
+            throw new IllegalArgumentException("[userCommandService] Invalid email address  ");
+        var mapped = new RegisterUserCommand(
+                createUserCommand.name(),
+                new EmailAddress(createUserCommand.email().address()).address(),
+                createUserCommand.password(),
+                createUserCommand.photo(),
+                createUserCommand.age(),
+                createUserCommand.location()
+        );
+        return this.handle(mapped);
     }
 }

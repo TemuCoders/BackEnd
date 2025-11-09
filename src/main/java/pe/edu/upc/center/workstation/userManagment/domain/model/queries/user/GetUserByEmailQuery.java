@@ -1,4 +1,6 @@
 package pe.edu.upc.center.workstation.userManagment.domain.model.queries.user;
 
-public record GetUserByEmailQuery(String email) {
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
+
+public record GetUserByEmailQuery(EmailAddress email) {
 }

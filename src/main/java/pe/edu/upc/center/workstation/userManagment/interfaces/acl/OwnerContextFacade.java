@@ -6,7 +6,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.*;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.owners.*;
-import pe.edu.upc.center.workstation.userManagment.interfaces.rest.transform.owners.*;
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.owner.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +23,12 @@ public class OwnerContextFacade {
         this.ownerQueryService = ownerQueryService;
     }
 
-    public Optional<OwnerResource> fetchOwnerById(Long ownerId) {
+    public Optional<OwnerResponse> fetchOwnerById(Long ownerId) {
         var opt = ownerQueryService.handle(new GetOwnerByIdQuery(ownerId));
         return opt.map(OwnerResourceFromEntityAssembler::toResource);
     }
 
-    public List<OwnerResource> fetchAllOwners() {
+    public List<OwnerResponse> fetchAllOwners() {
         return ownerQueryService.handle(new GetAllOwnersQuery())
                 .stream()
                 .map(OwnerResourceFromEntityAssembler::toResource)
@@ -41,13 +41,13 @@ public class OwnerContextFacade {
                 .orElse(List.of());
     }
 
-    public Long createOwner(CreateOwnerResource resource) {
-        var cmd = CreateOwnerCommandFromResourceAssembler.toCommand(resource);
+    public Long createOwner(CreateOwnerRequest resource) {
+        CreateOwnerCommand cmd = CreateOwnerCommandFromResourceAssembler.toCommand(resource);
         return ownerCommandService.handle(cmd);
     }
 
-    public Optional<OwnerResource> updateOwner(Long ownerId, UpdateOwnerResource resource) {
-        var cmd = UpdateOwnerCommandFromResourceAssembler.toCommand(ownerId, resource);
+    public Optional<OwnerResponse> updateOwner(Long ownerId, UpdateOwnerRequest resource) {
+        UpdateOwnerCommand cmd = UpdateOwnerCommandFromResourceAssembler.toCommand(ownerId, resource);
         var updated = ownerCommandService.handle(cmd);
         return updated.map(OwnerResourceFromEntityAssembler::toResource);
     }
