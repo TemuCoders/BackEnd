@@ -1,13 +1,15 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.queryservices;
 
-import org.springframework.stereotype.Service;
+import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdException;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.freelancer.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.FreelancerQueryService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.FreelancerRepository;
 
+import org.springframework.stereotype.Service;
+
 import java.util.*;
-import java.util.List;
+
 
 @Service
 public class FreelancerQueryServiceImpl implements FreelancerQueryService {
@@ -18,6 +20,11 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
         this.repository = repository;
     }
 
+    private Freelancer loadOrThrow(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, id));
+    }
+
     @Override
     public List<Freelancer> handle(GetAllFreelancersQuery query) {
         return repository.findAll();
@@ -25,32 +32,19 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
 
     @Override
     public Optional<Freelancer> handle(GetFreelancerByIdQuery query) {
-        return repository.findById(query.freelancerId());
-    }
-
-    @Override
-    public List<Long> handle(GetFreelancerBookingsQuery query) {
-        var agg = repository.findById(query.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + query.freelancerId() + " does not exist"));
-        return agg.getBookedSpaceIds();
+        return Optional.of(loadOrThrow(query.freelancerId()));
     }
 
     @Override
     public List<Long> handle(GetFreelancerFavoriteSpacesQuery query) {
-        var agg = repository.findById(query.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + query.freelancerId() + " does not exist"));
+        var agg = loadOrThrow(query.freelancerId());
         return agg.getFavoriteSpaceIds();
     }
 
     @Override
     public List<String> handle(GetFreelancerPreferencesQuery query) {
-        var agg = repository.findById(query.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + query.freelancerId() + " does not exist"));
+        var agg = loadOrThrow(query.freelancerId());
         return agg.getPreferences();
     }
 
-    @Override
-    public List<Long> handle(GetFreelancerBookedSpacesQuery q) {
-        return List.of();
-    }
 }

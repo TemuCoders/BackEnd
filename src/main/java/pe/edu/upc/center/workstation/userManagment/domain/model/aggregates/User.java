@@ -1,19 +1,19 @@
 package pe.edu.upc.center.workstation.userManagment.domain.model.aggregates;
 
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
+import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 
-import java.time.OffsetDateTime;
 import java.util.Date;
 
-import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.Image;
 
 @Entity
 @Table(name = "users")
-public class User extends AuditableAbstractAggregateRoot<User>{
+public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Getter
     @NotBlank
@@ -21,9 +21,10 @@ public class User extends AuditableAbstractAggregateRoot<User>{
     private String name;
 
     @Getter
-    @Email @NotBlank
-    @Column(name = "email", length = 120, nullable = false, unique = true)
-    private String email;
+    @Embedded
+    @AttributeOverride(name = "address",
+            column = @Column(name = "email", length = 120, nullable = false, unique = true))
+    private EmailAddress email;
 
     @NotBlank
     @Column(name = "password", length = 120, nullable = false)
@@ -49,11 +50,11 @@ public class User extends AuditableAbstractAggregateRoot<User>{
     @Column(name = "register_date", nullable = false)
     private Date registerDate;
 
-    protected User() { }
+    protected User() {}
 
     public User(String name, String email, String password, String photo, int age, String location) {
         this.name = name;
-        this.email = email;
+        this.email = new EmailAddress(email);
         this.password = password;
         this.photo = photo;
         this.age = age;
@@ -61,18 +62,11 @@ public class User extends AuditableAbstractAggregateRoot<User>{
         this.registerDate = new Date();
     }
 
+    public void register() { this.registerDate = new Date(); }
 
-    public void register() {
-        this.registerDate = new Date();
-    }
+    public void login() { }
 
-    public void login() {
-
-    }
-
-    public void logout() {
-
-    }
+    public void logout() { }
 
     public void updateProfile(String name, int age, String location, String photo) {
         this.name = name;
@@ -81,10 +75,7 @@ public class User extends AuditableAbstractAggregateRoot<User>{
         this.photo = photo;
     }
 
-    public void deleteAccount() {
-
-    }
-
+    public void deleteAccount() { }
 
     public String getPassword() { return password; }
     public void changePassword(String newPassword) { this.password = newPassword; }

@@ -1,10 +1,13 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.commandservices;
 
-import org.springframework.stereotype.Service;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.freelancer.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.FreelancerCommandService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.FreelancerRepository;
+import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdException;
+
+import jakarta.persistence.PersistenceException;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -19,25 +22,29 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
 
     @Override
     public Long handle(CreateFreelancerCommand command) {
-        var freelancer = new Freelancer(command.userType());
+        var agg = new Freelancer(command.userType());
         try {
-            repository.save(freelancer);
+            repository.save(agg);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while saving freelancer: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while saving freelancer: " + e.getMessage());
         }
-        return freelancer.getId();
+        return agg.getId();
     }
 
     @Override
     public Optional<Freelancer> handle(UpdateFreelancerCommand command) {
         var id = command.freelancerId();
         var agg = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + id + " does not exist"));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, id));
+
         agg.updateUserType(command.userType());
+
         try {
             return Optional.of(repository.save(agg));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while updating freelancer: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while updating freelancer: " + e.getMessage());
         }
     }
 
@@ -45,91 +52,88 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     public void handle(DeleteFreelancerCommand command) {
         var id = command.freelancerId();
         if (!repository.existsById(id))
-            throw new IllegalArgumentException("Freelancer with id " + id + " does not exist");
+            throw new NotFoundIdException(Freelancer.class, id);
+
         try {
             repository.deleteById(id);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while deleting freelancer: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while deleting freelancer: " + e.getMessage());
         }
     }
 
     @Override
     public void handle(AddPreferenceCommand command) {
         var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
+
         agg.addPreference(command.tag());
+
         try {
             repository.save(agg);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while adding preference: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while adding preference: " + e.getMessage());
         }
     }
 
     @Override
     public void handle(RemovePreferenceCommand command) {
         var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
+
         agg.removePreference(command.tag());
-        try {
-            repository.save(agg);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error while removing preference: " + e.getMessage());
-        }
-    }
 
-    @Override
-    public void handle(RegisterBookingRefCommand command) {
-        var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
-        agg.registerBookingRef(command.bookingId());
         try {
             repository.save(agg);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while registering booking: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void handle(CancelBookingRefCommand command) {
-        var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
-        agg.cancelBookingRef(command.bookingId());
-        try {
-            repository.save(agg);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Error while canceling booking: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while removing preference: " + e.getMessage());
         }
     }
 
     @Override
     public void handle(AddFavoriteSpaceCommand command) {
         var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
+
         agg.addFavoriteSpace(command.spaceId());
+
         try {
             repository.save(agg);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while adding favorite space: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while adding favorite space: " + e.getMessage());
         }
     }
 
     @Override
     public void handle(RemoveFavoriteSpaceCommand command) {
         var agg = repository.findById(command.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer with id " + command.freelancerId() + " does not exist"));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
+
         agg.removeFavoriteSpace(command.spaceId());
+
         try {
             repository.save(agg);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error while removing favorite space: " + e.getMessage());
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while removing favorite space: " + e.getMessage());
         }
     }
 
     @Override
     public void handle(UpdateFreelancerUserTypeCommand c) {
         var agg = repository.findById(c.freelancerId())
-                .orElseThrow(() -> new IllegalArgumentException("Freelancer not found: " + c.freelancerId()));
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, c.freelancerId()));
+
         agg.updateUserType(c.userType());
-        repository.save(agg);
+
+        try {
+            repository.save(agg);
+        } catch (Exception e) {
+            throw new PersistenceException(
+                    "[FreelancerCommandServiceImpl] Error while updating user type: " + e.getMessage());
+        }
     }
 }

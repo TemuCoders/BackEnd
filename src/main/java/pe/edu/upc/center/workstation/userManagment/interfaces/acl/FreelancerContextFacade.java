@@ -6,7 +6,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.commands.freelan
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.freelancer.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.*;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.freelancers.*;
-import pe.edu.upc.center.workstation.userManagment.interfaces.rest.transform.freelancers.*;
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.freelancers.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +23,12 @@ public class FreelancerContextFacade {
         this.freelancerQueryService = freelancerQueryService;
     }
 
-    public Optional<FreelancerResource> fetchFreelancerById(Long freelancerId) {
-        var opt = freelancerQueryService.handle(new GetFreelancerByIdQuery(freelancerId));
-        return opt.map(FreelancerResourceFromEntityAssembler::toResource);
+    public Optional<FreelancerResponse> fetchFreelancerById(Long freelancerId) {
+        return freelancerQueryService.handle(new GetFreelancerByIdQuery(freelancerId))
+                .map(FreelancerResourceFromEntityAssembler::toResource);
     }
 
-    public List<FreelancerResource> fetchAllFreelancers() {
+    public List<FreelancerResponse> fetchAllFreelancers() {
         return freelancerQueryService.handle(new GetAllFreelancersQuery())
                 .stream()
                 .map(FreelancerResourceFromEntityAssembler::toResource)
@@ -39,40 +39,35 @@ public class FreelancerContextFacade {
         return freelancerQueryService.handle(new GetFreelancerFavoriteSpacesQuery(freelancerId));
     }
 
-    public List<Long> getBookedSpaceIds(int freelancerId) {
-        return freelancerQueryService.handle(new GetFreelancerBookedSpacesQuery(freelancerId));
-    }
 
     public List<String> getPreferences(Long freelancerId) {
-        return freelancerQueryService.handle(new GetFreelancerByIdQuery(freelancerId))
-                .map(Freelancer::getPreferences)
-                .orElse(List.of());
+        return freelancerQueryService.handle(new GetFreelancerPreferencesQuery(freelancerId));
     }
 
-    public Long createFreelancer(CreateFreelancerResource resource) {
+    public Long createFreelancer(CreateFreelancerRequest resource) {
         var cmd = CreateFreelancerCommandFromResourceAssembler.toCommand(resource);
         return freelancerCommandService.handle(cmd);
     }
 
-    public Optional<FreelancerResource> updateFreelancer(Long freelancerId, UpdateFreelancerResource resource) {
+    public Optional<FreelancerResponse> updateFreelancer(Long freelancerId, UpdateFreelancerRequest resource) {
         var cmd = UpdateFreelancerCommandFromResourceAssembler.toCommand(freelancerId, resource);
-        var updated = freelancerCommandService.handle(cmd);
-        return updated.map(FreelancerResourceFromEntityAssembler::toResource);
+        return freelancerCommandService.handle(cmd)
+                .map(FreelancerResourceFromEntityAssembler::toResource);
     }
 
     public void deleteFreelancer(Long freelancerId) {
         freelancerCommandService.handle(new DeleteFreelancerCommand(freelancerId));
     }
 
-    public void updateUserType(int freelancerId, String newType) {
+    public void updateUserType(Long freelancerId, String newType) {
         freelancerCommandService.handle(new UpdateFreelancerUserTypeCommand(freelancerId, newType));
     }
 
-    public void addFavoriteSpace(Long freelancerId, long spaceId) {
+    public void addFavoriteSpace(Long freelancerId, Long spaceId) {
         freelancerCommandService.handle(new AddFavoriteSpaceCommand(freelancerId, spaceId));
     }
 
-    public void removeFavoriteSpace(Long freelancerId, long spaceId) {
+    public void removeFavoriteSpace(Long freelancerId, Long spaceId) {
         freelancerCommandService.handle(new RemoveFavoriteSpaceCommand(freelancerId, spaceId));
     }
 }

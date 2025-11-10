@@ -13,9 +13,6 @@ public interface FreelancerCommandService {
     void handle(AddPreferenceCommand command);
     void handle(RemovePreferenceCommand command);
 
-    void handle(RegisterBookingRefCommand command);
-    void handle(CancelBookingRefCommand command);
-
     void handle(AddFavoriteSpaceCommand command);
     void handle(RemoveFavoriteSpaceCommand command);
     void handle(UpdateFreelancerUserTypeCommand c);

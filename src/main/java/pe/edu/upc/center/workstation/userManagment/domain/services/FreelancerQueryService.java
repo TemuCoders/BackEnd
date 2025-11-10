@@ -8,8 +8,6 @@ import java.util.*;
 public interface FreelancerQueryService {
     List<Freelancer> handle(GetAllFreelancersQuery query);
     Optional<Freelancer> handle(GetFreelancerByIdQuery query);
-    List<Long> handle(GetFreelancerBookingsQuery query);
     List<Long> handle(GetFreelancerFavoriteSpacesQuery query);
     List<String> handle(GetFreelancerPreferencesQuery query);
-    List<Long> handle(GetFreelancerBookedSpacesQuery q);
 }

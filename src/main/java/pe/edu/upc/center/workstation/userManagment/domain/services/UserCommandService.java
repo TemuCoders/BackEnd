@@ -11,4 +11,5 @@ public interface UserCommandService {
     void handle(DeleteUserAccountCommand c);
     void handle(LoginUserCommand c);
     void handle(LogoutUserCommand c);
+    Long handle(CreateUserCommand createUserCommand);
 }
