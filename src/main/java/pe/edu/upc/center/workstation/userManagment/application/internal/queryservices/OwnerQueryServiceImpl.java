@@ -1,41 +1,43 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.queryservices;
 
-import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdException;
+import org.springframework.stereotype.Service;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Owner;
-import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.ExistsOwnerByIdQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetAllOwnersQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByIdQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByRucQuery;
 import pe.edu.upc.center.workstation.userManagment.domain.services.OwnerQueryService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.OwnerRepository;
 
-import org.springframework.stereotype.Service;
-
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OwnerQueryServiceImpl implements OwnerQueryService {
 
-    private final OwnerRepository ownerRepository;
+    private final OwnerRepository repository;
 
-    public OwnerQueryServiceImpl(OwnerRepository ownerRepository) {
-        this.ownerRepository = ownerRepository;
-    }
-
-    private Owner loadOrThrow(Long id) {
-        return ownerRepository.findById(id)
-                .orElseThrow(() -> new NotFoundIdException(Owner.class, id));
+    public OwnerQueryServiceImpl(OwnerRepository repository) {
+        this.repository = repository;
     }
 
     @Override
     public List<Owner> handle(GetAllOwnersQuery query) {
-        return ownerRepository.findAll();
+        return repository.findAll();
     }
 
     @Override
     public Optional<Owner> handle(GetOwnerByIdQuery query) {
-        return Optional.of(loadOrThrow(query.ownerId()));
+        return repository.findById(query.ownerId());
     }
 
     @Override
     public Optional<Owner> handle(GetOwnerByRucQuery query) {
-        return ownerRepository.findByRuc(query.ruc());
+        return repository.findByRuc(query.ruc());
+    }
+
+    @Override
+    public boolean handle(ExistsOwnerByIdQuery query) {
+        return repository.existsById(query.ownerId());
     }
 }

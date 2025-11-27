@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-public record UserResponse(
+public record UserResource(
         @JsonProperty("id") Long id,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,

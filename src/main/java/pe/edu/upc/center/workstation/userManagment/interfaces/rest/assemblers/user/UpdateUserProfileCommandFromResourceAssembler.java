@@ -1,18 +1,10 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.user;
 
-import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.UpdateUserProfileCommand;
-import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users.UpdateUserProfileRequest;
+import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.*;
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users.*;
 
-public final class UpdateUserProfileCommandFromResourceAssembler {
-    private UpdateUserProfileCommandFromResourceAssembler() {}
-
-    public static UpdateUserProfileCommand toCommand(Long userId, UpdateUserProfileRequest resource) {
-        return new UpdateUserProfileCommand(
-                userId,
-                resource.name(),
-                resource.age(),
-                resource.location(),
-                resource.photo()
-        );
+public class UpdateUserProfileCommandFromResourceAssembler {
+    public static UpdateUserProfileCommand toCommandFromResource(Long userId, UpdateUserProfileRequest r) {
+        return new UpdateUserProfileCommand(userId, r.name(), r.age(), r.location(), r.photo());
     }
 }

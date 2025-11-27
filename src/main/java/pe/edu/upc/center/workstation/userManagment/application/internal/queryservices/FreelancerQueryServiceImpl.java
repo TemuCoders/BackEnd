@@ -1,28 +1,25 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.queryservices;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdException;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.freelancer.*;
+
 import pe.edu.upc.center.workstation.userManagment.domain.services.FreelancerQueryService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.FreelancerRepository;
 
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-
-
 @Service
+@Transactional(readOnly = true)
 public class FreelancerQueryServiceImpl implements FreelancerQueryService {
 
     private final FreelancerRepository repository;
 
     public FreelancerQueryServiceImpl(FreelancerRepository repository) {
         this.repository = repository;
-    }
-
-    private Freelancer loadOrThrow(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, id));
     }
 
     @Override
@@ -32,19 +29,25 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
 
     @Override
     public Optional<Freelancer> handle(GetFreelancerByIdQuery query) {
-        return Optional.of(loadOrThrow(query.freelancerId()));
+        return repository.findById(query.freelancerId());
     }
 
     @Override
     public List<Long> handle(GetFreelancerFavoriteSpacesQuery query) {
-        var agg = loadOrThrow(query.freelancerId());
-        return agg.getFavoriteSpaceIds();
+        return repository.findById(query.freelancerId())
+                .map(Freelancer::getFavoriteSpaceIds)
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, query.freelancerId()));
     }
 
     @Override
     public List<String> handle(GetFreelancerPreferencesQuery query) {
-        var agg = loadOrThrow(query.freelancerId());
-        return agg.getPreferences();
+        return repository.findById(query.freelancerId())
+                .map(Freelancer::getPreferences)
+                .orElseThrow(() -> new NotFoundIdException(Freelancer.class, query.freelancerId()));
     }
 
+    @Override
+    public boolean handle(ExistsFreelancerByIdQuery query) {
+        return repository.existsById(query.freelancerId());
+    }
 }

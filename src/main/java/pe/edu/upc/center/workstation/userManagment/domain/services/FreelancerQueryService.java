@@ -10,4 +10,5 @@ public interface FreelancerQueryService {
     Optional<Freelancer> handle(GetFreelancerByIdQuery query);
     List<Long> handle(GetFreelancerFavoriteSpacesQuery query);
     List<String> handle(GetFreelancerPreferencesQuery query);
+    boolean handle(ExistsFreelancerByIdQuery query);
 }

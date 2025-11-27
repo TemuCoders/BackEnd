@@ -1,15 +1,12 @@
 package pe.edu.upc.center.workstation.userManagment.domain.model.aggregates;
 
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
-import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
 
 import java.util.Date;
-
 
 @Entity
 @Table(name = "users")
@@ -23,8 +20,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Getter
     @Embedded
     @AttributeOverride(name = "address",
-            column = @Column(name = "email", length = 120, nullable = false, unique = true))
-    private EmailAddress email;
+            column = @Column(name = "email_address", length = 120, nullable = false, unique = true))
+    private EmailAddress emailAddress;
 
     @NotBlank
     @Column(name = "password", length = 120, nullable = false)
@@ -50,11 +47,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(name = "register_date", nullable = false)
     private Date registerDate;
 
-    protected User() {}
+    protected User() { }
 
-    public User(String name, String email, String password, String photo, int age, String location) {
+    /** Ctor principal usando VO para email. */
+    public User(String name, EmailAddress emailAddress, String password, String photo, int age, String location) {
         this.name = name;
-        this.email = new EmailAddress(email);
+        this.emailAddress = emailAddress;
         this.password = password;
         this.photo = photo;
         this.age = age;
@@ -62,11 +60,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.registerDate = new Date();
     }
 
+    /** Conveniencia si recibes email como String. */
+    public User(String name, String email, String password, String photo, int age, String location) {
+        this(name, new EmailAddress(email), password, photo, age, location);
+    }
+
     public void register() { this.registerDate = new Date(); }
-
-    public void login() { }
-
-    public void logout() { }
 
     public void updateProfile(String name, int age, String location, String photo) {
         this.name = name;
@@ -75,8 +74,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.photo = photo;
     }
 
-    public void deleteAccount() { }
-
-    public String getPassword() { return password; }
     public void changePassword(String newPassword) { this.password = newPassword; }
+
+    public String getEmail() { return emailAddress != null ? emailAddress.address() : null; }
 }
