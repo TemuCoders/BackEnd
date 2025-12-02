@@ -10,8 +10,9 @@ import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resourc
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources.SpaceResponse;
 import pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resources.SpaceMinimalResponse;
 
-public class SpaceAssembler {
+import java.util.List;
 
+public class SpaceAssembler {
 
     public static CreateSpaceCommand toCommandFromRequest(CreateSpaceRequest request) {
         return new CreateSpaceCommand(
@@ -28,7 +29,7 @@ public class SpaceAssembler {
                         request.city(),
                         request.postalCode()
                 ),
-                request.img()
+                request.images()
         );
     }
 
@@ -48,7 +49,7 @@ public class SpaceAssembler {
                         request.city(),
                         request.postalCode()
                 ),
-                request.img()
+                request.images()
         );
     }
 
@@ -66,7 +67,7 @@ public class SpaceAssembler {
                 entity.getAddress().number(),
                 entity.getAddress().city(),
                 entity.getAddress().postalCode(),
-                entity.getImg()
+                entity.getImages()
         );
     }
 
@@ -81,7 +82,7 @@ public class SpaceAssembler {
                 entity.getDescription(),
                 entity.getAvailable(),
                 entity.getAddress().getFullAddress(),
-                entity.getImg()
+                entity.getImages()
         );
     }
 
@@ -97,11 +98,11 @@ public class SpaceAssembler {
             String streetNumber,
             String city,
             String postalCode,
-            String img
+            List<String> images
     ) {
         return new CreateSpaceCommand(
                 name, ownerId, spaceType, price, capacity, description, available,
-                new Address(street, streetNumber, city, postalCode), img
+                new Address(street, streetNumber, city, postalCode), images
         );
     }
 
@@ -118,11 +119,11 @@ public class SpaceAssembler {
             String streetNumber,
             String city,
             String postalCode,
-            String img
+            List<String> images
     ) {
         return new UpdateSpaceCommand(
                 spaceId, name, ownerId, spaceType, capacity, price, description, available,
-                new Address(street, streetNumber, city, postalCode), img
+                new Address(street, streetNumber, city, postalCode), images
         );
     }
 }

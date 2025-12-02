@@ -3,6 +3,7 @@ package pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.Address;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,7 +28,7 @@ public record CreateSpaceCommand(
         String description,
         Boolean available,
         Address address,
-        String img
+        List<String> images
 ) {
     public CreateSpaceCommand{
         Objects.requireNonNull(name, "[CreateProfileCommand] name must not be null");
@@ -38,6 +39,6 @@ public record CreateSpaceCommand(
         Objects.requireNonNull(description, "[CreateProfileCommand] description must not be null");
         Objects.requireNonNull(available, "[CreateProfileCommand] available must not be null");
         Objects.requireNonNull(address, "[CreateProfileCommand] address must not be null");
-        Objects.requireNonNull(img, "[CreateProfileCommand] img must not be null");
+        Objects.requireNonNull(images, "[CreateProfileCommand] images must not be null");
     }
 }

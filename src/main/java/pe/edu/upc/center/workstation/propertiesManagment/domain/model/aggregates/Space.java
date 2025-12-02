@@ -11,6 +11,9 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjec
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represent a space in the system.
  */
@@ -56,8 +59,11 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
     private Boolean available;
 
     @Getter
-    @Column(name = "img", nullable = false)
-    private String img;
+    @ElementCollection
+    @CollectionTable(name = "space_images",
+            joinColumns = @JoinColumn(name = "space_id"))
+    @Column(name = "image_url", nullable = false)
+    private List<String> images = new ArrayList<>();
 
     @Getter
     @Embedded
@@ -93,7 +99,7 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
         this.description = command.description();
         this.available = true;
         this.address = command.address();
-        this.img = command.img();
+        this.images = command.images() != null ? new ArrayList<>(command.images()) : new ArrayList<>();
     }
 
     /**
@@ -108,7 +114,10 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
         this.price = command.price();
         this.description = command.description();
         this.address = command.address();
-        this.img = command.img();
+        if (command.images() != null) {
+            this.images.clear();
+            this.images.addAll(command.images());
+        }
     }
 
     public String getFullAddress() {

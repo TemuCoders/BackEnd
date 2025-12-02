@@ -2,11 +2,14 @@ package pe.edu.upc.center.workstation.propertiesManagment.interfaces.rest.resour
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 import pe.edu.upc.center.workstation.shared.utils.Util;
+
+import java.util.List;
 
 public record CreateSpaceRequest(
         @JsonProperty("name")
@@ -54,9 +57,10 @@ public record CreateSpaceRequest(
         @Pattern(regexp = "\\d{5}", message = "Postal code must be 5 digits")
         @Size(min = Util.POSTAL_CODE_LENGTH, max = Util.POSTAL_CODE_LENGTH)
         String postalCode,
-        
-        @JsonProperty("img")
-        @NotNull @NotBlank
-        String img
+
+        @JsonProperty("images")
+        @NotNull
+        @NotEmpty(message = "Images list must not be empty")
+        List<String> images
 ) {
 }
