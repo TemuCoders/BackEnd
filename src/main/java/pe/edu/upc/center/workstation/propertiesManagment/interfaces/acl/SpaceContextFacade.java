@@ -44,7 +44,7 @@ public class SpaceContextFacade {
      * @return an Optional containing the space resource if found
      */
     public Optional<SpaceResponse> fetchSpaceById(Long spaceId) {
-        var getSpaceByIdQuery = new  GetSpaceByIdQuery(spaceId);
+        var getSpaceByIdQuery = new GetSpaceByIdQuery(spaceId);
         var optionalProfile = spaceQueryService.handle(getSpaceByIdQuery);
         if(optionalProfile.isEmpty()){
             return Optional.empty();
@@ -60,8 +60,8 @@ public class SpaceContextFacade {
      * @return a list of spaces linked to that space
      */
     public List<SpaceResponse> fetchSpaxcesByOwnerId(OwnerId ownerId) {
-        var getSpaceByOwnerQuery = new  GetSpaceByOwnerQuery(ownerId);
-        var spaces =  spaceQueryService.handle(getSpaceByOwnerQuery);
+        var getSpaceByOwnerQuery = new GetSpaceByOwnerQuery(ownerId);
+        var spaces = spaceQueryService.handle(getSpaceByOwnerQuery);
         return spaces.stream()
                 .map(SpaceAssembler::toResponseFromEntity)
                 .toList();
@@ -70,6 +70,18 @@ public class SpaceContextFacade {
     /**
      * Create a new space.
      *
+     * @param name the name of the space
+     * @param ownerId the owner ID
+     * @param spaceType the type of space
+     * @param price the price of the space
+     * @param capacity the capacity of the space
+     * @param description the description of the space
+     * @param available the availability status
+     * @param street the street name
+     * @param streetNumber the street number
+     * @param city the city name
+     * @param postalCode the postal code
+     * @param images the list of image URLs
      * @return the ID of the newly created space
      */
     public Long createSpace(String name,
@@ -79,9 +91,15 @@ public class SpaceContextFacade {
                             Integer capacity,
                             String description,
                             Boolean available,
-                            String street, String streetNumber,
-                            String city, String postalCode, String img) {
-        var createSpaceCommand = SpaceAssembler.toCommandFromValues(name, ownerId,spaceType,price,capacity,description,available,street,streetNumber,city,postalCode, img);
+                            String street,
+                            String streetNumber,
+                            String city,
+                            String postalCode,
+                            List<String> images) {
+        var createSpaceCommand = SpaceAssembler.toCommandFromValues(
+                name, ownerId, spaceType, price, capacity, description,
+                available, street, streetNumber, city, postalCode, images
+        );
         var spaceId = spaceCommandService.handle(createSpaceCommand);
         if(Objects.isNull(spaceId)) {
             return 0L;
@@ -92,12 +110,38 @@ public class SpaceContextFacade {
     /**
      * Update an existing space.
      *
-     * @param spaceId  the ID of the space to update
-     * @return an Optional containing the updated space resource if successful
+     * @param spaceId the ID of the space to update
+     * @param name the name of the space
+     * @param ownerId the owner ID
+     * @param spaceType the type of space
+     * @param capacity the capacity of the space
+     * @param price the price of the space
+     * @param description the description of the space
+     * @param available the availability status
+     * @param street the street name
+     * @param streetNumber the street number
+     * @param city the city name
+     * @param postalCode the postal code
+     * @param images the list of image URLs
+     * @return the ID of the updated space, or 0L if update failed
      */
-    public Long updateSpace(Long spaceId, String name, OwnerId ownerId, String spaceType, Integer capacity, Double price, String description, Boolean available, String street, String streetNumber,
-                            String city, String postalCode, String img) {
-        var updateSpaceCommand = SpaceAssembler.toCommandFromValues(spaceId,name,ownerId,spaceType,price, capacity,description,available,street,streetNumber,city,postalCode, img);
+    public Long updateSpace(Long spaceId,
+                            String name,
+                            OwnerId ownerId,
+                            String spaceType,
+                            Integer capacity,
+                            Double price,
+                            String description,
+                            Boolean available,
+                            String street,
+                            String streetNumber,
+                            String city,
+                            String postalCode,
+                            List<String> images) {
+        var updateSpaceCommand = SpaceAssembler.toCommandFromValues(
+                spaceId, name, ownerId, spaceType, price, capacity,
+                description, available, street, streetNumber, city, postalCode, images
+        );
         var optionalSpace = spaceCommandService.handle(updateSpaceCommand);
         if(optionalSpace.isEmpty()) {
             return 0L;
