@@ -17,7 +17,7 @@ import java.util.Objects;
  * @param address the address of the space.
  */
 
-public record UpdateSpaceCommand(Long spaceId, String name, OwnerId ownerId,String spaceType, Integer capacity, Double price, String description, Boolean available,Address address) {
+public record UpdateSpaceCommand(Long spaceId, String name, OwnerId ownerId,String spaceType, Integer capacity, Double price, String description, Boolean available,Address address, String img) {
 
     public UpdateSpaceCommand {
         Objects.requireNonNull(name, "[UpdateSpaceCommand] name cannot be null]");
@@ -27,6 +27,7 @@ public record UpdateSpaceCommand(Long spaceId, String name, OwnerId ownerId,Stri
         Objects.requireNonNull(price, "[UpdateSpaceCommand] price cannot be null");
         Objects.requireNonNull(description, "[UpdateSpaceCommand] description cannot be null");
         Objects.requireNonNull(address, "[UpdateSpaceCommand] address cannot be null");
+        Objects.requireNonNull(img, "[UpdateSpaceCommand] img cannot be null");
 
         if(spaceId < 0){
             throw new IllegalArgumentException("[UpdateSpaceCommand] spaceId cannot be negative");

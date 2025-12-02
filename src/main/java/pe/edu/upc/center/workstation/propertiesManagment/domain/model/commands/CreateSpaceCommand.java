@@ -26,7 +26,8 @@ public record CreateSpaceCommand(
         Integer capacity,
         String description,
         Boolean available,
-        Address address
+        Address address,
+        String img
 ) {
     public CreateSpaceCommand{
         Objects.requireNonNull(name, "[CreateProfileCommand] name must not be null");
@@ -37,6 +38,6 @@ public record CreateSpaceCommand(
         Objects.requireNonNull(description, "[CreateProfileCommand] description must not be null");
         Objects.requireNonNull(available, "[CreateProfileCommand] available must not be null");
         Objects.requireNonNull(address, "[CreateProfileCommand] address must not be null");
-
+        Objects.requireNonNull(img, "[CreateProfileCommand] img must not be null");
     }
 }

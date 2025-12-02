@@ -58,6 +58,10 @@ public record UpdateSpaceRequest(
         @NotNull @NotBlank
         @Pattern(regexp = "\\d{5}", message = "Postal code must be 5 digits")
         @Size(min = Util.POSTAL_CODE_LENGTH, max = Util.POSTAL_CODE_LENGTH)
-        String postalCode
+        String postalCode,
+
+        @JsonProperty("img")
+        @NotNull @NotBlank
+        String img
 ) {
 }

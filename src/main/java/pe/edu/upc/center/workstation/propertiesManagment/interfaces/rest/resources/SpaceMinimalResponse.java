@@ -13,6 +13,7 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjec
  * @param description
  * @param available
  * @param address
+ * @param img
  */
-public record  SpaceMinimalResponse(Long spaceId, String name,OwnerId ownerId, String spaceType, Integer capacity, Double price, String description, Boolean available, String address)
+public record  SpaceMinimalResponse(Long spaceId, String name,OwnerId ownerId, String spaceType, Integer capacity, Double price, String description, Boolean available, String address, String img)
 { }

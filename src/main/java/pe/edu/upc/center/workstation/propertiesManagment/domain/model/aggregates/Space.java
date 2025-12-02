@@ -56,6 +56,10 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
     private Boolean available;
 
     @Getter
+    @Column(name = "img", nullable = false)
+    private String img;
+
+    @Getter
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "street",
@@ -89,6 +93,7 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
         this.description = command.description();
         this.available = true;
         this.address = command.address();
+        this.img = command.img();
     }
 
     /**
@@ -103,6 +108,7 @@ public class Space extends AuditableAbstractAggregateRoot<Space> {
         this.price = command.price();
         this.description = command.description();
         this.address = command.address();
+        this.img = command.img();
     }
 
     public String getFullAddress() {

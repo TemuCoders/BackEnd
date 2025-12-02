@@ -16,7 +16,8 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjec
  * @param streetNumber
  * @param city
  * @param postalCode
+ * @param img
  */
 public record SpaceResponse(Long spaceId, String name,OwnerId ownerId, String spaceType, Integer capacity, Double price, String description, Boolean available, String street, String streetNumber,
-                            String city, String postalCode)
+                            String city, String postalCode, String img)
 { }

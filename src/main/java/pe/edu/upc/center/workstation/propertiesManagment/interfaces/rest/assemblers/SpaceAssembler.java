@@ -27,7 +27,8 @@ public class SpaceAssembler {
                         request.streetNumber(),
                         request.city(),
                         request.postalCode()
-                )
+                ),
+                request.img()
         );
     }
 
@@ -46,7 +47,8 @@ public class SpaceAssembler {
                         request.streetNumber(),
                         request.city(),
                         request.postalCode()
-                )
+                ),
+                request.img()
         );
     }
 
@@ -63,7 +65,8 @@ public class SpaceAssembler {
                 entity.getAddress().street(),
                 entity.getAddress().number(),
                 entity.getAddress().city(),
-                entity.getAddress().postalCode()
+                entity.getAddress().postalCode(),
+                entity.getImg()
         );
     }
 
@@ -77,7 +80,8 @@ public class SpaceAssembler {
                 entity.getPrice(),
                 entity.getDescription(),
                 entity.getAvailable(),
-                entity.getAddress().getFullAddress()
+                entity.getAddress().getFullAddress(),
+                entity.getImg()
         );
     }
 
@@ -92,11 +96,12 @@ public class SpaceAssembler {
             String street,
             String streetNumber,
             String city,
-            String postalCode
+            String postalCode,
+            String img
     ) {
         return new CreateSpaceCommand(
                 name, ownerId, spaceType, price, capacity, description, available,
-                new Address(street, streetNumber, city, postalCode)
+                new Address(street, streetNumber, city, postalCode), img
         );
     }
 
@@ -112,11 +117,12 @@ public class SpaceAssembler {
             String street,
             String streetNumber,
             String city,
-            String postalCode
+            String postalCode,
+            String img
     ) {
         return new UpdateSpaceCommand(
                 spaceId, name, ownerId, spaceType, capacity, price, description, available,
-                new Address(street, streetNumber, city, postalCode)
+                new Address(street, streetNumber, city, postalCode), img
         );
     }
 }

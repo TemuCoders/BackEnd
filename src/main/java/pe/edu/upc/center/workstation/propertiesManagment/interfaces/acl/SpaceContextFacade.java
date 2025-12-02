@@ -80,8 +80,8 @@ public class SpaceContextFacade {
                             String description,
                             Boolean available,
                             String street, String streetNumber,
-                            String city, String postalCode) {
-        var createSpaceCommand = SpaceAssembler.toCommandFromValues(name, ownerId,spaceType,price,capacity,description,available,street,streetNumber,city,postalCode);
+                            String city, String postalCode, String img) {
+        var createSpaceCommand = SpaceAssembler.toCommandFromValues(name, ownerId,spaceType,price,capacity,description,available,street,streetNumber,city,postalCode, img);
         var spaceId = spaceCommandService.handle(createSpaceCommand);
         if(Objects.isNull(spaceId)) {
             return 0L;
@@ -96,8 +96,8 @@ public class SpaceContextFacade {
      * @return an Optional containing the updated space resource if successful
      */
     public Long updateSpace(Long spaceId, String name, OwnerId ownerId, String spaceType, Integer capacity, Double price, String description, Boolean available, String street, String streetNumber,
-                            String city, String postalCode) {
-        var updateSpaceCommand = SpaceAssembler.toCommandFromValues(spaceId,name,ownerId,spaceType,price, capacity,description,available,street,streetNumber,city,postalCode);
+                            String city, String postalCode, String img) {
+        var updateSpaceCommand = SpaceAssembler.toCommandFromValues(spaceId,name,ownerId,spaceType,price, capacity,description,available,street,streetNumber,city,postalCode, img);
         var optionalSpace = spaceCommandService.handle(updateSpaceCommand);
         if(optionalSpace.isEmpty()) {
             return 0L;
