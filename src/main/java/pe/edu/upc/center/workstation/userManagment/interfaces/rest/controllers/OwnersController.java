@@ -1,19 +1,22 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.controllers;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.*;
-import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.*;
-import pe.edu.upc.center.workstation.userManagment.domain.services.*;
-import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.owner.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.DeleteOwnerCommand;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetAllOwnersQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByIdQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.services.OwnerCommandService;
+import pe.edu.upc.center.workstation.userManagment.domain.services.OwnerQueryService;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.owners.*;
-
+import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.owner.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
+@CrossOrigin(origins = "*",
+        methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
 @RestController
 @RequestMapping(value = "/api/v1/owners", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Owners", description = "Owner Management Endpoints")
@@ -27,39 +30,42 @@ public class OwnersController {
         this.ownerCommandService = ownerCommandService;
     }
 
-    @PostMapping
-    public ResponseEntity<OwnerResponse> createOwner(@RequestBody CreateOwnerRequest resource) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OwnerResponse> createOwner(@Valid @RequestBody CreateOwnerRequest resource) {
         var cmd = CreateOwnerCommandFromResourceAssembler.toCommand(resource);
-        var id = ownerCommandService.handle(cmd);
+        Long id = ownerCommandService.handle(cmd);
         if (id == null || id == 0L) return ResponseEntity.badRequest().build();
 
         var opt = ownerQueryService.handle(new GetOwnerByIdQuery(id));
-        if (opt.isEmpty()) return ResponseEntity.badRequest().build();
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
 
-        var res = OwnerResourceFromEntityAssembler.toResource(opt.get());
+        var res = OwnerResourceFromEntityAssembler.toResponseFromEntity(opt.get());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<OwnerResponse>> getAllOwners() {
-        var list = ownerQueryService.handle(new GetAllOwnersQuery());
-        var res = list.stream().map(OwnerResourceFromEntityAssembler::toResource).collect(Collectors.toList());
+        var owners = ownerQueryService.handle(new GetAllOwnersQuery());
+        var res = owners.stream()
+                .map(OwnerResourceFromEntityAssembler::toResponseFromEntity)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/{ownerId}")
     public ResponseEntity<OwnerResponse> getOwnerById(@PathVariable Long ownerId) {
         var opt = ownerQueryService.handle(new GetOwnerByIdQuery(ownerId));
-        if (opt.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResource(opt.get()));
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
-    @PutMapping("/{ownerId}")
-    public ResponseEntity<OwnerResponse> updateOwner(@PathVariable Long ownerId, @RequestBody UpdateOwnerRequest resource) {
+    @PutMapping(value = "/{ownerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<OwnerResponse> updateOwner(@PathVariable Long ownerId,
+                                                     @Valid @RequestBody UpdateOwnerRequest resource) {
         var cmd = UpdateOwnerCommandFromResourceAssembler.toCommand(ownerId, resource);
         var opt = ownerCommandService.handle(cmd);
         if (opt.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResource(opt.get()));
+        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
     @DeleteMapping("/{ownerId}")
@@ -67,5 +73,4 @@ public class OwnersController {
         ownerCommandService.handle(new DeleteOwnerCommand(ownerId));
         return ResponseEntity.noContent().build();
     }
-
 }

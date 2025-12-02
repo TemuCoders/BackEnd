@@ -14,7 +14,7 @@ public final class CreateUserCommandFromResourceAssembler {
             throw new IllegalArgumentException("[CreateUserCOmmand] Invalid email address  ");
         return new CreateUserCommand(
                 resource.name(),
-                new EmailAddress(resource.email()),
+                new EmailAddress(resource.email()).address(),
                 resource.password(),
                 resource.photo(),
                 resource.age(),
