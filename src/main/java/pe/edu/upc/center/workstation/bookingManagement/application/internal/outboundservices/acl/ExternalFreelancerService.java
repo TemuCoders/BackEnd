@@ -14,6 +14,6 @@ public class ExternalFreelancerService {
     }
 
     public boolean existsFreelancerById(FreelancerId freelancerId) {
-        return this.freelancerContextFacade.fetchFreelancerById(freelancerId.freelancerId()).isPresent();
+        return this.freelancerContextFacade.existsFreelancerById(freelancerId.freelancerId());
     }
 }
