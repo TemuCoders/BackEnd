@@ -36,6 +36,7 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
     public List<Long> handle(GetFreelancerFavoriteSpacesQuery query) {
         return repository.findById(query.freelancerId())
                 .map(Freelancer::getFavoriteSpaceIds)
+                .map(java.util.ArrayList::new)
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, query.freelancerId()));
     }
 
@@ -43,11 +44,22 @@ public class FreelancerQueryServiceImpl implements FreelancerQueryService {
     public List<String> handle(GetFreelancerPreferencesQuery query) {
         return repository.findById(query.freelancerId())
                 .map(Freelancer::getPreferences)
+                .map(java.util.ArrayList::new)
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, query.freelancerId()));
+    }
+
+    @Override
+    public Optional<Freelancer> handle(GetFreelancerByUserIdQuery query) {
+        return repository.findByUserId(query.userId());
     }
 
     @Override
     public boolean handle(ExistsFreelancerByIdQuery query) {
         return repository.existsById(query.freelancerId());
+    }
+
+    @Override
+    public boolean handle(ExistsFreelancerByUserIdQuery query) {
+        return repository.existsByUserId(query.userId());
     }
 }

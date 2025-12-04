@@ -1,5 +1,6 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,9 +14,10 @@ import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.us
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
+@Tag(name = "Users", description = "User Management Endpoints")
 public class UsersController {
 
     private final UserCommandService userCommandService;
@@ -49,7 +51,7 @@ public class UsersController {
         return ResponseEntity.ok(data);
     }
 
-    @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResource> updateUser(@PathVariable Long userId,
                                                    @Valid @RequestBody UpdateUserProfileRequest request) {
         var cmd = UpdateUserProfileCommandFromResourceAssembler.toCommandFromResource(userId, request);

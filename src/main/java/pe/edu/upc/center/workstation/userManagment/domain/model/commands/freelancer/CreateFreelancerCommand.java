@@ -2,6 +2,6 @@ package pe.edu.upc.center.workstation.userManagment.domain.model.commands.freela
 
 import java.util.Objects;
 
-public record CreateFreelancerCommand(String userType) {
+public record CreateFreelancerCommand(Long userId,String userType) {
 
 }

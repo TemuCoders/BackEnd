@@ -15,4 +15,8 @@ public interface OwnerRepository extends JpaRepository<Owner, Long> {
     boolean existsByRuc(String ruc);
 
     boolean existsByRucAndIdIsNot(String ruc, Long id);
+
+    Optional<Owner> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
 }

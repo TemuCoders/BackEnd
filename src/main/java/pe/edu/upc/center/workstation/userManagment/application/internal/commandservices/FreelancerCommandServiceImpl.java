@@ -1,5 +1,7 @@
 package pe.edu.upc.center.workstation.userManagment.application.internal.commandservices;
 
+
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.freelancer.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.FreelancerCommandService;
@@ -21,8 +23,12 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public Long handle(CreateFreelancerCommand command) {
-        var agg = new Freelancer(command.userType());
+        if (repository.findByUserId(command.userId()).isPresent()) {
+            throw new IllegalArgumentException("Freelancer already exists for userId=" + command.userId());
+        }
+        var agg = new Freelancer(command.userId(), command.userType());
         try {
             repository.save(agg);
         } catch (Exception e) {
@@ -33,6 +39,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public Optional<Freelancer> handle(UpdateFreelancerCommand command) {
         var id = command.freelancerId();
         var agg = repository.findById(id)
@@ -49,6 +56,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(DeleteFreelancerCommand command) {
         var id = command.freelancerId();
         if (!repository.existsById(id))
@@ -63,6 +71,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(AddPreferenceCommand command) {
         var agg = repository.findById(command.freelancerId())
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
@@ -78,6 +87,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(RemovePreferenceCommand command) {
         var agg = repository.findById(command.freelancerId())
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
@@ -93,6 +103,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(AddFavoriteSpaceCommand command) {
         var agg = repository.findById(command.freelancerId())
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
@@ -108,6 +119,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(RemoveFavoriteSpaceCommand command) {
         var agg = repository.findById(command.freelancerId())
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, command.freelancerId()));
@@ -123,6 +135,7 @@ public class FreelancerCommandServiceImpl implements FreelancerCommandService {
     }
 
     @Override
+    @Transactional
     public void handle(UpdateFreelancerUserTypeCommand c) {
         var agg = repository.findById(c.freelancerId())
                 .orElseThrow(() -> new NotFoundIdException(Freelancer.class, c.freelancerId()));

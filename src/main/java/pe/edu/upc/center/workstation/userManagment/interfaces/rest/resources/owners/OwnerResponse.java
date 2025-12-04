@@ -5,6 +5,7 @@ import java.util.List;
 
 public record OwnerResponse(
         @JsonProperty("id") Long id,
+        @JsonProperty("userId") Long userId,
         @JsonProperty("company") String company,
         @JsonProperty("ruc") String ruc,
         @JsonProperty("registeredSpaceIds") List<Long> registeredSpaceIds

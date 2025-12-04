@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.*;
+
 
 import java.util.Date;
 
@@ -20,8 +21,8 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Getter
     @Embedded
     @AttributeOverride(name = "address",
-            column = @Column(name = "email_address", length = 120, nullable = false, unique = true))
-    private EmailAddress emailAddress;
+            column = @Column(name = "email", length = 120, nullable = false, unique = true))
+    private EmailAddress email;
 
     @NotBlank
     @Column(name = "password", length = 120, nullable = false)
@@ -47,34 +48,65 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     @Column(name = "register_date", nullable = false)
     private Date registerDate;
 
-    protected User() { }
+    @Getter
+    @Embedded
+    private UserRoleAssignment role = new UserRoleAssignment();
 
-    /** Ctor principal usando VO para email. */
-    public User(String name, EmailAddress emailAddress, String password, String photo, int age, String location) {
-        this.name = name;
-        this.emailAddress = emailAddress;
-        this.password = password;
-        this.photo = photo;
-        this.age = age;
-        this.location = location;
-        this.registerDate = new Date();
-    }
+    protected User() {}
 
-    /** Conveniencia si recibes email como String. */
     public User(String name, String email, String password, String photo, int age, String location) {
-        this(name, new EmailAddress(email), password, photo, age, location);
+        setName(name);
+        this.email = new EmailAddress(email);
+        setPassword(password);
+        setPhoto(photo);
+        setAge(age);
+        setLocation(location);
+        this.registerDate = new Date();
     }
 
     public void register() { this.registerDate = new Date(); }
 
     public void updateProfile(String name, int age, String location, String photo) {
-        this.name = name;
-        this.age = age;
-        this.location = location;
-        this.photo = photo;
+        setName(name);
+        setAge(age);
+        setLocation(location);
+        setPhoto(photo);
     }
 
-    public void changePassword(String newPassword) { this.password = newPassword; }
+    public void changePassword(String newPassword) { setPassword(newPassword); }
 
-    public String getEmail() { return emailAddress != null ? emailAddress.address() : null; }
+    public void assignRole(UserRoleName roleName, Long roleId) {
+        if (roleName == null) throw new IllegalArgumentException("roleName must not be null");
+        if (roleId == null || roleId <= 0) throw new IllegalArgumentException("roleId must be > 0");
+        this.role = new UserRoleAssignment(roleName, roleId);
+    }
+
+    public void clearRole() { this.role = new UserRoleAssignment(); }
+
+    public String getPassword() { return password; }
+
+    private void setName(String name) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("name must not be blank");
+        this.name = name.trim();
+    }
+
+    private void setPassword(String pwd) {
+        if (pwd == null || pwd.isBlank()) throw new IllegalArgumentException("password must not be blank");
+        this.password = pwd;
+    }
+
+    private void setPhoto(String photo) {
+        if (photo == null || photo.isBlank()) throw new IllegalArgumentException("photo must not be blank");
+        this.photo = photo.trim();
+    }
+
+    private void setAge(int age) {
+        if (age < 0 || age > 120) throw new IllegalArgumentException("age out of range");
+        this.age = age;
+    }
+
+    private void setLocation(String location) {
+        if (location == null || location.isBlank()) throw new IllegalArgumentException("location must not be blank");
+        this.location = location.trim();
+    }
 }

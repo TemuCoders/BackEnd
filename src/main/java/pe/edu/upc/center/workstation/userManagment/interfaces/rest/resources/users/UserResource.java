@@ -12,6 +12,7 @@ public record UserResource(
         @JsonProperty("photo") String photo,
         @JsonProperty("age") int age,
         @JsonProperty("location") String location,
+        @JsonProperty("role") RoleResponse role,
         @JsonProperty("registerDate")
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
         Date registerDate
