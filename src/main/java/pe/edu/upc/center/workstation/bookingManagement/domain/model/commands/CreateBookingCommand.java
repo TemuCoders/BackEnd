@@ -1,6 +1,5 @@
 package pe.edu.upc.center.workstation.bookingManagement.domain.model.commands;
 
-import org.springframework.cglib.core.Local;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.FreelancerId;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.SpaceId;
 

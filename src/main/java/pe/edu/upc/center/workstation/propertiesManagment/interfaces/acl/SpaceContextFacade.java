@@ -1,12 +1,9 @@
 package pe.edu.upc.center.workstation.propertiesManagment.interfaces.acl;
 
 import org.springframework.stereotype.Service;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.CreateSpaceCommand;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.DeleteSpaceCommand;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetAllSpacesQuery;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetSpaceByIdQuery;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.queries.GetSpaceByOwnerQuery;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.Address;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceCommandService;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceQueryService;

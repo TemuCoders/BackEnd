@@ -3,7 +3,6 @@ package pe.edu.upc.center.workstation.bookingManagement.domain.model.aggregates;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import lombok.Getter;
-import lombok.Setter;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.commands.ChangeStatusBookingCommand;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.commands.CreateBookingCommand;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.BookingCode;

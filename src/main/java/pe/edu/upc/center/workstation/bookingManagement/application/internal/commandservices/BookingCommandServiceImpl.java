@@ -1,7 +1,5 @@
 package pe.edu.upc.center.workstation.bookingManagement.application.internal.commandservices;
 
-import java.util.Optional;
-
 import jakarta.persistence.PersistenceException;
 import org.springframework.stereotype.Service;
 import pe.edu.upc.center.workstation.bookingManagement.application.internal.outboundservices.acl.ExternalFreelancerService;

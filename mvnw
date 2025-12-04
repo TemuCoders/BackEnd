@@ -126,7 +126,7 @@ maven-mvnd-*bin.*)
   :Darwin*arm64) distributionPlatform=darwin-aarch64 ;;
   :Linux*x86_64*) distributionPlatform=linux-amd64 ;;
   *)
-    echo "Cannot detect native platform for mvnd on $(uname)-$(uname -m), use pure java version" >&2
+    echo "Cannot detect native workstation for mvnd on $(uname)-$(uname -m), use pure java version" >&2
     distributionPlatform=linux-amd64
     ;;
   esac
@@ -137,7 +137,7 @@ maven-mvnd-*) MVN_CMD=mvnd.sh _MVNW_REPO_PATTERN=/maven/mvnd/ ;;
 esac
 
 # apply MVNW_REPOURL and calculate MAVEN_HOME
-# maven home pattern: ~/.m2/wrapper/dists/{apache-maven-<version>,maven-mvnd-<version>-<platform>}/<hash>
+# maven home pattern: ~/.m2/wrapper/dists/{apache-maven-<version>,maven-mvnd-<version>-<workstation>}/<hash>
 [ -z "${MVNW_REPOURL-}" ] || distributionUrl="$MVNW_REPOURL$_MVNW_REPO_PATTERN${distributionUrl#*"$_MVNW_REPO_PATTERN"}"
 distributionUrlName="${distributionUrl##*/}"
 distributionUrlNameMain="${distributionUrlName%.*}"

@@ -1,0 +1,10 @@
+package pe.edu.upc.center.workstation.iam.interfaces.rest.resources;
+
+/**
+ * Resource representation of a Role in the iam system.
+ *
+ * @param id   the unique identifier of the role
+ * @param name the name of the role
+ */
+public record RoleResource(Long id, String name) {
+}

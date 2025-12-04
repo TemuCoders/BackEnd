@@ -2,7 +2,6 @@ package pe.edu.upc.center.workstation.bookingManagement.application.internal.out
 
 import org.springframework.stereotype.Service;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.FreelancerId;
-import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 import pe.edu.upc.center.workstation.userManagment.interfaces.acl.FreelancerContextFacade;
 
 @Service

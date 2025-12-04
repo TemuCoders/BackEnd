@@ -1,7 +1,6 @@
 package pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects;
 
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
 
 @Embeddable
 public record BookingStatus(String status) {

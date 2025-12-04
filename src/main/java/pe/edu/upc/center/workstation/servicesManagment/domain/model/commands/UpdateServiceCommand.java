@@ -1,7 +1,5 @@
 package pe.edu.upc.center.workstation.servicesManagment.domain.model.commands;
 
-import pe.edu.upc.center.workstation.servicesManagment.domain.model.valueobjects.SpaceId;
-
 import java.util.Objects;
 
 public record UpdateServiceCommand(Long serviceId, String name, String description, Double price) {

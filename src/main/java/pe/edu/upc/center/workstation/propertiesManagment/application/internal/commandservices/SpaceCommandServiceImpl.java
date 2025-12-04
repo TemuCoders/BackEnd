@@ -6,7 +6,6 @@ import pe.edu.upc.center.workstation.propertiesManagment.domain.model.aggregates
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.CreateSpaceCommand;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.DeleteSpaceCommand;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.model.commands.UpdateSpaceCommand;
-import pe.edu.upc.center.workstation.propertiesManagment.domain.model.valueobjects.OwnerId;
 import pe.edu.upc.center.workstation.propertiesManagment.domain.services.SpaceCommandService;
 import pe.edu.upc.center.workstation.propertiesManagment.infrastructure.persistence.jpa.repositories.SpaceRepository;
 import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdException;

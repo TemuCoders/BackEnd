@@ -7,7 +7,6 @@ import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.BookingStatus;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.FreelancerId;
 import pe.edu.upc.center.workstation.bookingManagement.domain.model.valueobjects.SpaceId;
-import pe.edu.upc.center.workstation.bookingManagement.infrastructure.persistance.jpa.repositories.BookingRepository;
 import pe.edu.upc.center.workstation.bookingManagement.interfaces.rest.resources.BookingMinimalResponse;
 import pe.edu.upc.center.workstation.bookingManagement.interfaces.rest.resources.BookingResponse;
 import pe.edu.upc.center.workstation.bookingManagement.interfaces.rest.resources.ChangeStatusBookingRequest;

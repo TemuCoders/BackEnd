@@ -2,7 +2,6 @@ package pe.edu.upc.center.workstation.servicesManagment.interfaces.rest.resource
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import pe.edu.upc.center.workstation.servicesManagment.domain.model.valueobjects.SpaceId;
 
 public record UpdatedServiceRequest (
     @JsonProperty("serviceId")
