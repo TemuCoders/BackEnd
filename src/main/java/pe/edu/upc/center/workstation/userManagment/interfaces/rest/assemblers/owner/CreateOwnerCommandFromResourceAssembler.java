@@ -6,7 +6,12 @@ import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.own
 public final class CreateOwnerCommandFromResourceAssembler {
     private CreateOwnerCommandFromResourceAssembler() {}
 
-    public static CreateOwnerCommand toCommand(CreateOwnerRequest resource) {
-        return new CreateOwnerCommand(resource.company(), resource.ruc());
+    public static CreateOwnerCommand toCommand(CreateOwnerRequest r) {
+        return new CreateOwnerCommand(
+                r.userId(),
+                r.company() == null ? null : r.company(),
+                r.ruc() == null ? null : r.ruc().trim()
+
+        );
     }
 }

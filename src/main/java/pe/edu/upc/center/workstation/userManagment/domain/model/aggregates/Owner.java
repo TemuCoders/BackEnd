@@ -2,6 +2,7 @@ package pe.edu.upc.center.workstation.userManagment.domain.model.aggregates;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 
@@ -9,11 +10,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
-@Table(
-        name = "owners",
-        uniqueConstraints = @UniqueConstraint(name = "uk_owners_ruc", columnNames = "ruc")
-)
+@Table(name = "owners")
 public class Owner extends AuditableAbstractAggregateRoot<Owner> {
+
+    @Getter
+    @NotNull
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Long userId;
 
     @Getter
     @NotBlank
@@ -22,7 +25,7 @@ public class Owner extends AuditableAbstractAggregateRoot<Owner> {
 
     @Getter
     @NotBlank
-    @Column(name = "ruc", length = 11, nullable = false, unique = true)
+    @Column(name = "ruc", length = 20, nullable = false, unique = true)
     private String ruc;
 
     @Getter
@@ -31,9 +34,10 @@ public class Owner extends AuditableAbstractAggregateRoot<Owner> {
     @Column(name = "space_id", nullable = false)
     private Set<Long> registeredSpaceIds = new LinkedHashSet<>();
 
-    protected Owner() { }
+    protected Owner() {}
 
-    public Owner(String company, String ruc) {
+    public Owner(Long userId, String company, String ruc) {
+        setUserId(userId);
         setCompany(company);
         setRuc(ruc);
     }
@@ -44,13 +48,18 @@ public class Owner extends AuditableAbstractAggregateRoot<Owner> {
     }
 
     public void registerSpace(Long spaceId) {
-        if (spaceId == null || spaceId <= 0) throw new IllegalArgumentException("spaceId must be > 0");
+        validateSpaceId(spaceId);
         registeredSpaceIds.add(spaceId);
     }
 
     public void removeSpace(Long spaceId) {
-        if (spaceId == null || spaceId <= 0) throw new IllegalArgumentException("spaceId must be > 0");
+        validateSpaceId(spaceId);
         registeredSpaceIds.remove(spaceId);
+    }
+
+    private void setUserId(Long userId) {
+        if (userId == null || userId <= 0) throw new IllegalArgumentException("userId must be > 0");
+        this.userId = userId;
     }
 
     private void setCompany(String company) {
@@ -59,7 +68,11 @@ public class Owner extends AuditableAbstractAggregateRoot<Owner> {
     }
 
     private void setRuc(String ruc) {
-        if (ruc == null || !ruc.matches("\\d{11}")) throw new IllegalArgumentException("ruc must be 11 digits");
-        this.ruc = ruc;
+        if (ruc == null || ruc.isBlank()) throw new IllegalArgumentException("ruc must not be blank");
+        this.ruc = ruc.trim();
+    }
+
+    private void validateSpaceId(Long spaceId) {
+        if (spaceId == null || spaceId <= 0) throw new IllegalArgumentException("spaceId must be > 0");
     }
 }

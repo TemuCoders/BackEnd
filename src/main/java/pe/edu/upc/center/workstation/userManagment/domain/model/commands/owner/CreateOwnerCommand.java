@@ -5,4 +5,4 @@ import pe.edu.upc.center.workstation.shared.utils.Util;
 import java.util.Objects;
 
 
-public record CreateOwnerCommand(String company, String ruc) {}
+public record CreateOwnerCommand(Long userId,String company, String ruc) {}

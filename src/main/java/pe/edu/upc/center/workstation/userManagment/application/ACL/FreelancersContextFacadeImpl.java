@@ -1,8 +1,11 @@
 package pe.edu.upc.center.workstation.userManagment.application.ACL;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.freelancer.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.SetUserRoleCommand;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.freelancer.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleName;
 import pe.edu.upc.center.workstation.userManagment.domain.services.*;
 import pe.edu.upc.center.workstation.userManagment.interfaces.acl.FreelancerContextFacade;
 
@@ -11,19 +14,24 @@ public class FreelancersContextFacadeImpl implements FreelancerContextFacade {
 
     private final FreelancerCommandService freelancerCommandService;
     private final FreelancerQueryService freelancerQueryService;
+    private final UserCommandService userCommandService;
 
-    public FreelancersContextFacadeImpl(
-            FreelancerCommandService freelancerCommandService,
-            FreelancerQueryService freelancerQueryService) {
+    public FreelancersContextFacadeImpl(FreelancerCommandService freelancerCommandService,
+                                        FreelancerQueryService freelancerQueryService,
+                                        UserCommandService userCommandService) {
         this.freelancerCommandService = freelancerCommandService;
         this.freelancerQueryService = freelancerQueryService;
+        this.userCommandService = userCommandService;
     }
 
     @Override
-    public Long createFreelancer(String userType) {
-        var cmd = new CreateFreelancerCommand(userType);
-        Long freelancerId = freelancerCommandService.handle(cmd);
-        return (freelancerId == null) ? 0L : freelancerId;
+    @Transactional
+    public Long createFreelancer(Long userId, String userType) {
+        var freelancerId = freelancerCommandService.handle(new CreateFreelancerCommand(userId, userType));
+        if (freelancerId == null || freelancerId == 0L) return 0L;
+
+        userCommandService.handle(new SetUserRoleCommand(userId, UserRoleName.FREELANCER, freelancerId));
+        return freelancerId;
     }
 
     @Override

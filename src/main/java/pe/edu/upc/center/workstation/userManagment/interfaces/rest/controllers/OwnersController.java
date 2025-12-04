@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.CreateOwnerCommand;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.DeleteOwnerCommand;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetAllOwnersQuery;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByIdQuery;
@@ -32,7 +33,7 @@ public class OwnersController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OwnerResponse> createOwner(@Valid @RequestBody CreateOwnerRequest resource) {
-        var cmd = CreateOwnerCommandFromResourceAssembler.toCommand(resource);
+        CreateOwnerCommand cmd = CreateOwnerCommandFromResourceAssembler.toCommand(resource);
         Long id = ownerCommandService.handle(cmd);
         if (id == null || id == 0L) return ResponseEntity.badRequest().build();
 
@@ -59,7 +60,7 @@ public class OwnersController {
         return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
-    @PutMapping(value = "/{ownerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{ownerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<OwnerResponse> updateOwner(@PathVariable Long ownerId,
                                                      @Valid @RequestBody UpdateOwnerRequest resource) {
         var cmd = UpdateOwnerCommandFromResourceAssembler.toCommand(ownerId, resource);

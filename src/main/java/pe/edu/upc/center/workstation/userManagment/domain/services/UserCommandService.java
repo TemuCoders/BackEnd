@@ -13,4 +13,8 @@ public interface UserCommandService {
     Optional<User> handle(RegisterUserCommand command);
 
     Optional<User> handle(UpdateUserProfileCommand command);
+
+    void handle(SetUserRoleCommand command);
+
+    void handle(ClearUserRoleCommand command);
 }

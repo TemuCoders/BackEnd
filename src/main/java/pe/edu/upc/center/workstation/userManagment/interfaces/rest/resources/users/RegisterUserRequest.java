@@ -30,5 +30,13 @@ public record RegisterUserRequest(
 
         @JsonProperty("location")
         @NotNull @NotBlank
-        String location
+        String location,
+
+        @JsonProperty("roleName") @NotBlank String roleName,
+
+        @JsonProperty("company") String company,
+
+        @JsonProperty("ruc") String ruc,
+
+        @JsonProperty("userType") String userType
 ) {}
