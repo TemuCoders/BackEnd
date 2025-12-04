@@ -38,7 +38,7 @@ public class FreelancersController {
         var opt = freelancerQueryService.handle(new GetFreelancerByIdQuery(id));
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
 
-        var res = FreelancerResourceFromEntityAssembler.toResource(opt.get());
+        var res = FreelancerResourceFromEntityAssembler.toResponseFromEntity(opt.get());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
@@ -46,8 +46,8 @@ public class FreelancersController {
     public ResponseEntity<List<FreelancerResponse>> getAllFreelancers() {
         var list = freelancerQueryService.handle(new GetAllFreelancersQuery());
         var res = list.stream()
-                .map(FreelancerResourceFromEntityAssembler::toResource)
-                .collect(Collectors.toList());
+                .map(FreelancerResourceFromEntityAssembler::toResponseFromEntity)
+                .toList();
         return ResponseEntity.ok(res);
     }
 
@@ -55,25 +55,25 @@ public class FreelancersController {
     public ResponseEntity<FreelancerResponse> getFreelancerById(@PathVariable long freelancerId) {
         var opt = freelancerQueryService.handle(new GetFreelancerByIdQuery(freelancerId));
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResource(opt.get()));
+        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
-    @PutMapping(value = "/{freelancerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{freelancerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FreelancerResponse> updateFreelancer(@PathVariable long freelancerId,
                                                                @Valid @RequestBody UpdateFreelancerRequest resource) {
         var cmd = UpdateFreelancerCommandFromResourceAssembler.toCommand(freelancerId, resource);
         var opt = freelancerCommandService.handle(cmd);
         if (opt.isEmpty()) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResource(opt.get()));
+        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
-    @PatchMapping(value = "/{freelancerId}/user-type", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(path = "/{freelancerId}/user-type", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FreelancerResponse> updateUserType(@PathVariable long freelancerId,
                                                              @Valid @RequestBody UpdateFreelancerUserTypeRequest resource) {
         freelancerCommandService.handle(new UpdateFreelancerUserTypeCommand(freelancerId, resource.userType()));
         var opt = freelancerQueryService.handle(new GetFreelancerByIdQuery(freelancerId));
         if (opt.isEmpty()) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResource(opt.get()));
+        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
     }
 
     @GetMapping("/{freelancerId}/preferences")

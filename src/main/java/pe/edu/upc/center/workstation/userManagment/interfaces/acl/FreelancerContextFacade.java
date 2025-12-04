@@ -2,7 +2,7 @@ package pe.edu.upc.center.workstation.userManagment.interfaces.acl;
 
 public interface FreelancerContextFacade {
 
-    Long createFreelancer(String userType);
+    Long createFreelancer(Long userId,String userType);
 
     void updateFreelancerUserType(Long freelancerId, String userType);
 

@@ -1,10 +1,8 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users;
 
 import pe.edu.upc.center.workstation.shared.utils.Util;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
-
 
 public record RegisterUserRequest(
 
@@ -30,5 +28,9 @@ public record RegisterUserRequest(
 
         @JsonProperty("location")
         @NotNull @NotBlank
-        String location
+        String location,
+
+        @JsonProperty("roleName")
+        @NotNull @NotBlank
+        String roleName
 ) {}

@@ -2,7 +2,7 @@ package pe.edu.upc.center.workstation.userManagment.interfaces.acl;
 
 public interface OwnerContextFacade {
 
-    Long createOwner(String company, String ruc);
+    Long createOwner(Long userId,String company, String ruc);
 
     Long fetchOwnerIdByRuc(String ruc);
 

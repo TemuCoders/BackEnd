@@ -7,6 +7,7 @@ import jakarta.validation.constraints.*;
 
 
 public record CreateOwnerRequest(
+        @JsonProperty("userId") @NotNull Long userId,
         @JsonProperty("company") @NotBlank String company,
         @JsonProperty("ruc")
         @NotBlank

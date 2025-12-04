@@ -5,6 +5,7 @@ import java.util.List;
 
 public record FreelancerResponse(
         @JsonProperty("id") Long id,
+        @JsonProperty("userId") Long userId,
         @JsonProperty("userType") String userType,
         @JsonProperty("preferences") List<String> preferences
 ) {}

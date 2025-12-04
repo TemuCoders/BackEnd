@@ -1,5 +1,6 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,30 +9,50 @@ import org.springframework.web.bind.annotation.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserCommandService;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserQueryService;
+import pe.edu.upc.center.workstation.userManagment.interfaces.acl.UserManagementContextFacade;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users.*;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.user.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "*", methods = { RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE })
+@Tag(name = "Users", description = "User Management Endpoints")
 public class UsersController {
 
+    private final UserManagementContextFacade userManagementFacade;
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
 
-    public UsersController(UserCommandService userCommandService, UserQueryService userQueryService) {
+    public UsersController(UserManagementContextFacade userManagementFacade,
+                           UserCommandService userCommandService,
+                           UserQueryService userQueryService) {
+        this.userManagementFacade = userManagementFacade;
         this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResource> createUser(@Valid @RequestBody RegisterUserRequest request) {
-        var cmd = RegisterUserCommandFromResourceAssembler.toCommandFromResource(request);
-        var created = userCommandService.handle(cmd);
-        if (created.isEmpty()) return ResponseEntity.badRequest().build();
-        var res = UserResourceFromEntityAssembler.toResourceFromEntity(created.get());
+        // Crear usuario + Owner/Freelancer automáticamente usando facade
+        Long userId = userManagementFacade.registerUser(
+                request.name(),
+                request.email(),
+                request.password(),
+                request.photo(),
+                request.age(),
+                request.location(),
+                request.roleName()
+        );
+
+        if (userId == 0L) return ResponseEntity.badRequest().build();
+
+        // Traer el usuario creado usando el query service
+        var optUser = userQueryService.handle(new GetUserByIdQuery(userId));
+        if (optUser.isEmpty()) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        var res = UserResourceFromEntityAssembler.toResourceFromEntity(optUser.get());
         return new ResponseEntity<>(res, HttpStatus.CREATED);
     }
 
@@ -49,7 +70,7 @@ public class UsersController {
         return ResponseEntity.ok(data);
     }
 
-    @PutMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/{userId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResource> updateUser(@PathVariable Long userId,
                                                    @Valid @RequestBody UpdateUserProfileRequest request) {
         var cmd = UpdateUserProfileCommandFromResourceAssembler.toCommandFromResource(userId, request);

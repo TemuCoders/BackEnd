@@ -9,10 +9,11 @@ public final class OwnerResourceFromEntityAssembler {
     private OwnerResourceFromEntityAssembler() {}
 
     public static OwnerResponse toResponseFromEntity(Owner entity) {
-        Objects.requireNonNull(entity, "[OwnerResponseFromEntityAssembler] entity es null");
+        Objects.requireNonNull(entity, "[OwnerResourceFromEntityAssembler] entity es null");
         var registeredSpaceIds = new ArrayList<>(entity.getRegisteredSpaceIds());
         return new OwnerResponse(
                 entity.getId(),
+                entity.getUserId(),
                 entity.getCompany(),
                 entity.getRuc(),
                 registeredSpaceIds

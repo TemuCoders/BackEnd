@@ -6,7 +6,10 @@ import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.fre
 public final class CreateFreelancerCommandFromResourceAssembler {
     private CreateFreelancerCommandFromResourceAssembler() {}
 
-    public static CreateFreelancerCommand toCommand(CreateFreelancerRequest resource) {
-        return new CreateFreelancerCommand(resource.userType());
+    public static CreateFreelancerCommand toCommand(CreateFreelancerRequest r) {
+        return new CreateFreelancerCommand(
+                r.userId(),
+                r.userType() == null ? null : r.userType()
+        );
     }
 }

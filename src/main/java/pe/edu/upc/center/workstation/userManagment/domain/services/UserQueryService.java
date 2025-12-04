@@ -10,4 +10,6 @@ public interface UserQueryService {
     Optional<User> handle(GetUserByIdQuery query);
     Optional<User> handle(GetUserByEmailQuery query);
     List<User> handle(GetAllUsersQuery query);
+    List<User> handle(GetUsersByRoleNameQuery query);
+    Optional<User> handle(LoginUserQuery query);
 }

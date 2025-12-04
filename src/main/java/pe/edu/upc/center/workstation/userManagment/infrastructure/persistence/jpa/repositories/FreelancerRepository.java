@@ -4,6 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.Freelancer;
 
+import java.util.Optional;
+
 @Repository
 public interface FreelancerRepository extends JpaRepository<Freelancer, Long> {
+    Optional<Freelancer> findByUserId(Long userId);
+
+    boolean existsByUserId(Long userId);
 }

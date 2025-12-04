@@ -21,7 +21,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         this.userRepository = userRepository;
     }
 
-    /** Compatibilidad: adapta CreateUserCommand → RegisterUserCommand y retorna id. */
     @Override
     @Transactional
     public Long handle(CreateUserCommand createUserCommand) {
@@ -31,7 +30,8 @@ public class UserCommandServiceImpl implements UserCommandService {
                 createUserCommand.password(),
                 createUserCommand.photo(),
                 createUserCommand.age(),
-                createUserCommand.location()
+                createUserCommand.location(),
+                createUserCommand.roleName()
         ));
         return out.map(User::getId).orElse(0L);
     }
@@ -40,17 +40,20 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Transactional
     public Optional<User> handle(RegisterUserCommand command) {
         var email = new EmailAddress(command.email());
-        if (userRepository.existsByEmailAddress(email)) {
+        if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("User with email already exists");
         }
+
         var user = new User(
                 command.name(),
-                email,
+                email.address(),
                 command.password(),
                 command.photo(),
                 command.age(),
-                command.location()
+                command.location(),
+                command.roleName()
         );
+
         try {
             userRepository.save(user);
             return Optional.of(user);
@@ -66,11 +69,23 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
 
         user.updateProfile(command.name(), command.age(), command.location(), command.photo());
+
         try {
-            var updated = userRepository.save(user);
-            return Optional.of(updated);
+            return Optional.of(userRepository.save(user));
         } catch (Exception e) {
             throw new PersistenceException("[UserCommandServiceImpl] Error while updating user: " + e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public void handle(SetUserRoleCommand command) {
+        var user = userRepository.findById(command.userId())
+                .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
+
+        user.assignRole(command.roleName());
+        userRepository.save(user);
+    }
+
+
 }
