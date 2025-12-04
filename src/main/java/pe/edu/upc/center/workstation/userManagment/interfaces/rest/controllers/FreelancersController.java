@@ -87,4 +87,24 @@ public class FreelancersController {
         freelancerCommandService.handle(new DeleteFreelancerCommand(freelancerId));
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<FreelancerResponse> getFreelancerByUserId(@PathVariable Long userId) {
+        var query = new GetFreelancerByUserIdQuery(userId);
+        var opt = freelancerQueryService.handle(query);
+
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(FreelancerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
+    }
+
+    @GetMapping("/id-by-user/{userId}")
+    public ResponseEntity<Long> getFreelancerIdByUserId(@PathVariable Long userId) {
+        var query = new GetFreelancerByUserIdQuery(userId);
+        var opt = freelancerQueryService.handle(query);
+
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(opt.get().getId());
+    }
 }

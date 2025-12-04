@@ -8,6 +8,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.C
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.owner.DeleteOwnerCommand;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetAllOwnersQuery;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByIdQuery;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.owner.GetOwnerByUserIdQuery;
 import pe.edu.upc.center.workstation.userManagment.domain.services.OwnerCommandService;
 import pe.edu.upc.center.workstation.userManagment.domain.services.OwnerQueryService;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.owners.*;
@@ -73,5 +74,26 @@ public class OwnersController {
     public ResponseEntity<Void> deleteOwner(@PathVariable Long ownerId) {
         ownerCommandService.handle(new DeleteOwnerCommand(ownerId));
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<OwnerResponse> getOwnerByUserId(@PathVariable Long userId) {
+        var query = new GetOwnerByUserIdQuery(userId);
+        var opt = ownerQueryService.handle(query);
+
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(OwnerResourceFromEntityAssembler.toResponseFromEntity(opt.get()));
+    }
+
+    @GetMapping("/id-by-user/{userId}")
+    public ResponseEntity<Long> getOwnerIdByUserId(@PathVariable Long userId) {
+        var query = new GetOwnerByUserIdQuery(userId);
+        var opt = ownerQueryService.handle(query);
+
+        if (opt.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(opt.get().getId());
     }
 }
