@@ -6,7 +6,6 @@ import lombok.Getter;
 import pe.edu.upc.center.workstation.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.*;
 
-
 import java.util.Date;
 
 @Entity
@@ -50,11 +49,11 @@ public class User extends AuditableAbstractAggregateRoot<User> {
 
     @Getter
     @Embedded
-    private UserRoleAssignment role = new UserRoleAssignment();
+    private UserRoleAssignment role;
 
     protected User() {}
 
-    public User(String name, String email, String password, String photo, int age, String location) {
+    public User(String name, String email, String password, String photo, int age, String location, UserRoleName roleName) {
         setName(name);
         this.email = new EmailAddress(email);
         setPassword(password);
@@ -62,6 +61,7 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         setAge(age);
         setLocation(location);
         this.registerDate = new Date();
+        this.role = new UserRoleAssignment(roleName);
     }
 
     public void register() { this.registerDate = new Date(); }
@@ -73,15 +73,12 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         setPhoto(photo);
     }
 
-    public void changePassword(String newPassword) { setPassword(newPassword); }
-
-    public void assignRole(UserRoleName roleName, Long roleId) {
+    public void assignRole(UserRoleName roleName) {
         if (roleName == null) throw new IllegalArgumentException("roleName must not be null");
-        if (roleId == null || roleId <= 0) throw new IllegalArgumentException("roleId must be > 0");
-        this.role = new UserRoleAssignment(roleName, roleId);
+        this.role = new UserRoleAssignment(roleName);
     }
 
-    public void clearRole() { this.role = new UserRoleAssignment(); }
+    public void changePassword(String newPassword) { setPassword(newPassword); }
 
     public String getPassword() { return password; }
 
@@ -109,4 +106,6 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         if (location == null || location.isBlank()) throw new IllegalArgumentException("location must not be blank");
         this.location = location.trim();
     }
+
+
 }

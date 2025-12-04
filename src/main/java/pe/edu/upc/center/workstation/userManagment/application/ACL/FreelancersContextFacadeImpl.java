@@ -27,14 +27,14 @@ public class FreelancersContextFacadeImpl implements FreelancerContextFacade {
     @Override
     @Transactional
     public Long createFreelancer(Long userId, String userType) {
-        var freelancerId = freelancerCommandService.handle(new CreateFreelancerCommand(userId, userType));
-        if (freelancerId == null || freelancerId == 0L) return 0L;
+        Long freelancerId = freelancerCommandService.handle(new CreateFreelancerCommand(userId, userType));
+        userCommandService.handle(new SetUserRoleCommand(userId, UserRoleName.FREELANCER));
 
-        userCommandService.handle(new SetUserRoleCommand(userId, UserRoleName.FREELANCER, freelancerId));
         return freelancerId;
     }
 
     @Override
+    @Transactional
     public void updateFreelancerUserType(Long freelancerId, String userType) {
         freelancerCommandService.handle(new UpdateFreelancerUserTypeCommand(freelancerId, userType));
     }
@@ -64,3 +64,4 @@ public class FreelancersContextFacadeImpl implements FreelancerContextFacade {
         return freelancerQueryService.handle(new ExistsFreelancerByIdQuery(freelancerId));
     }
 }
+

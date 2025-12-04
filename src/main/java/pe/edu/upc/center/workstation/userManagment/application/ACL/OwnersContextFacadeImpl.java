@@ -32,12 +32,12 @@ public class OwnersContextFacadeImpl implements OwnerContextFacade {
     @Override
     @Transactional
     public Long createOwner(Long userId, String company, String ruc) {
-        var ownerId = ownerCommandService.handle(new CreateOwnerCommand(userId, company, ruc));
-        if (ownerId == null || ownerId == 0L) return 0L;
+        Long ownerId = ownerCommandService.handle(new CreateOwnerCommand(userId, company, ruc));
+        userCommandService.handle(new SetUserRoleCommand(userId, UserRoleName.OWNER));
 
-        userCommandService.handle(new SetUserRoleCommand(userId, UserRoleName.OWNER, ownerId));
         return ownerId;
     }
+
 
     @Override
     public Long fetchOwnerIdByRuc(String ruc) {

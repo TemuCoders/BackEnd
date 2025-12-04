@@ -7,6 +7,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.queries.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserQueryService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserRepository;
+import pe.edu.upc.center.workstation.userManagment.domain.model.queries.user.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,5 +40,25 @@ public class UserQueryServiceImpl implements pe.edu.upc.center.workstation.userM
     @Override
     public List<User> handle(GetUsersByRoleNameQuery query) {
         return userRepository.findByRole_RoleName(query.roleName());
+    }
+
+    @Override
+    public Optional<User> handle(LoginUserQuery query) {
+        var email = new EmailAddress(query.email());
+        var userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) return Optional.empty();
+
+        var user = userOpt.get();
+
+        if (!passwordMatches(query.password(), user.getPassword())) {
+            return Optional.empty();
+        }
+
+        return Optional.of(user);
+    }
+
+    private boolean passwordMatches(String rawPassword, String hashedPassword) {
+        return org.springframework.security.crypto.bcrypt.BCrypt.checkpw(rawPassword, hashedPassword);
     }
 }

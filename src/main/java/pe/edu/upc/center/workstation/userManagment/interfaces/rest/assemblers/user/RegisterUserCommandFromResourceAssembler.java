@@ -1,6 +1,7 @@
 package pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.user;
 
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.*;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleName;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users.*;
 
 public class RegisterUserCommandFromResourceAssembler {
@@ -15,7 +16,9 @@ public class RegisterUserCommandFromResourceAssembler {
                 r.password(),
                 r.photo(),
                 r.age(),
-                r.location()
+                r.location(),
+                UserRoleName.valueOf(r.roleName().trim().toUpperCase())
         );
+
     }
 }

@@ -4,6 +4,7 @@ package pe.edu.upc.center.workstation.userManagment.interfaces.rest.assemblers.u
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.CreateUserCommand;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
 import pe.edu.upc.center.workstation.userManagment.interfaces.rest.resources.users.RegisterUserRequest;
+import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleName;
 
 import java.util.regex.Pattern;
 
@@ -36,8 +37,10 @@ public final class CreateUserCommandFromResourceAssembler {
                 password,
                 photo.trim(),
                 age,
-                location.trim()
+                location.trim(),
+                UserRoleName.valueOf(r.roleName().trim().toUpperCase())
         );
+
     }
 
     private static String require(String v, String field) {

@@ -7,8 +7,6 @@ import pe.edu.upc.center.workstation.shared.domain.exceptions.NotFoundIdExceptio
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.User;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleAssignment;
-import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleName;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserCommandService;
 import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserRepository;
 
@@ -23,7 +21,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         this.userRepository = userRepository;
     }
 
-    /** Compatibilidad: adapta CreateUserCommand → RegisterUserCommand y retorna id. */
     @Override
     @Transactional
     public Long handle(CreateUserCommand createUserCommand) {
@@ -33,7 +30,8 @@ public class UserCommandServiceImpl implements UserCommandService {
                 createUserCommand.password(),
                 createUserCommand.photo(),
                 createUserCommand.age(),
-                createUserCommand.location()
+                createUserCommand.location(),
+                createUserCommand.roleName()
         ));
         return out.map(User::getId).orElse(0L);
     }
@@ -45,14 +43,17 @@ public class UserCommandServiceImpl implements UserCommandService {
         if (userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("User with email already exists");
         }
+
         var user = new User(
                 command.name(),
                 email.address(),
                 command.password(),
                 command.photo(),
                 command.age(),
-                command.location()
+                command.location(),
+                command.roleName()
         );
+
         try {
             userRepository.save(user);
             return Optional.of(user);
@@ -68,6 +69,7 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
 
         user.updateProfile(command.name(), command.age(), command.location(), command.photo());
+
         try {
             return Optional.of(userRepository.save(user));
         } catch (Exception e) {
@@ -81,32 +83,9 @@ public class UserCommandServiceImpl implements UserCommandService {
         var user = userRepository.findById(command.userId())
                 .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
 
-        user.assignRole(resolveRoleName(command.roleName().name()), command.roleEntityId());
-        try {
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new PersistenceException("[UserCommandServiceImpl] Error while setting user role: " + e.getMessage());
-        }
+        user.assignRole(command.roleName());
+        userRepository.save(user);
     }
 
-    @Override
-    @Transactional
-    public void handle(ClearUserRoleCommand command) {
-        var user = userRepository.findById(command.userId())
-                .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
-        user.clearRole();
-        try {
-            userRepository.save(user);
-        } catch (Exception e) {
-            throw new PersistenceException("[UserCommandServiceImpl] Error while clearing user role: " + e.getMessage());
-        }
-    }
 
-    private static UserRoleName resolveRoleName(String raw) {
-        try {
-            return UserRoleName.valueOf(raw.trim().toUpperCase());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid roleName: " + raw + " (allowed: OWNER, FREELANCER)");
-        }
-    }
 }

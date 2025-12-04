@@ -12,9 +12,9 @@ public class UserResourceFromEntityAssembler {
 
         RoleResponse roleResource = null;
         UserRoleAssignment role = e.getRole();
-        if (role != null) {
-            String roleName = role.roleName() != null ? role.roleName().toString() : null;
-            roleResource = new RoleResponse(roleName, role.roleId());
+
+        if (role != null && role.roleName() != null) {
+            roleResource = new RoleResponse(role.roleName().toString());
         }
 
         return new UserResource(

@@ -1,15 +1,12 @@
 package pe.edu.upc.center.workstation.userManagment.domain.model.commands.user;
 
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.UserRoleName;
+import java.util.Objects;
 
-public record SetUserRoleCommand(Long userId, UserRoleName roleName, Long roleId) {
+public record SetUserRoleCommand(Long userId, UserRoleName roleName) {
     public SetUserRoleCommand {
-        if (userId == null || userId <= 0) throw new IllegalArgumentException("userId must be > 0");
-        if (roleName == null) throw new IllegalArgumentException("roleName required");
-        if (roleId == null || roleId <= 0) throw new IllegalArgumentException("roleId must be > 0");
-    }
-
-    public Long roleEntityId() {
-        return roleId;
+        Objects.requireNonNull(userId, "userId must not be null");
+        if (userId <= 0) throw new IllegalArgumentException("userId must be > 0");
+        Objects.requireNonNull(roleName, "roleName must not be null");
     }
 }
