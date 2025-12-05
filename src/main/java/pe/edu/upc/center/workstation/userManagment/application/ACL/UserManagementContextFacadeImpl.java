@@ -60,7 +60,8 @@ public class UserManagementContextFacadeImpl implements UserManagementContextFac
         Long userId = created.get().getId();
 
         if (roleName.equalsIgnoreCase("OWNER")) {
-            ownerCommandService.handle(new CreateOwnerCommand(userId, "Default Company", "00000000000"));
+            String ruc = String.format("%011d", userId + 10000000000L);
+            ownerCommandService.handle(new CreateOwnerCommand(userId, "Default Company", ruc));
         } else if (roleName.equalsIgnoreCase("FREELANCER")) {
             freelancerCommandService.handle(new CreateFreelancerCommand(userId, "Default"));
         }
