@@ -5,47 +5,45 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.User;
 import pe.edu.upc.center.workstation.userManagment.domain.model.queries.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
-import pe.edu.upc.center.workstation.userManagment.domain.services.UserQueryService;
-import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserRepository;
-import pe.edu.upc.center.workstation.userManagment.domain.model.queries.user.*;
+import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserManagementRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
-public class UserQueryServiceImpl implements pe.edu.upc.center.workstation.userManagment.domain.services.UserQueryService {
+public class UserManagementQueryServiceImpl implements pe.edu.upc.center.workstation.userManagment.domain.services.UserQueryService {
 
-    private final UserRepository userRepository;
+    private final UserManagementRepository userManagementRepository;
 
-    public UserQueryServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserManagementQueryServiceImpl(UserManagementRepository userManagementRepository) {
+        this.userManagementRepository = userManagementRepository;
     }
 
     @Override
     public Optional<User> handle(GetUserByIdQuery query) {
-        return userRepository.findById(query.userId());
+        return userManagementRepository.findById(query.userId());
     }
 
     @Override
     public Optional<User> handle(GetUserByEmailQuery query) {
-        return userRepository.findByEmail(new EmailAddress(query.email().address()));
+        return userManagementRepository.findByEmail(new EmailAddress(query.email().address()));
     }
 
     @Override
     public List<User> handle(GetAllUsersQuery query) {
-        return userRepository.findAll();
+        return userManagementRepository.findAll();
     }
 
     @Override
     public List<User> handle(GetUsersByRoleNameQuery query) {
-        return userRepository.findByRole_RoleName(query.roleName());
+        return userManagementRepository.findByRole_RoleName(query.roleName());
     }
 
     @Override
     public Optional<User> handle(LoginUserQuery query) {
         var email = new EmailAddress(query.email());
-        var userOpt = userRepository.findByEmail(email);
+        var userOpt = userManagementRepository.findByEmail(email);
 
         if (userOpt.isEmpty()) return Optional.empty();
 

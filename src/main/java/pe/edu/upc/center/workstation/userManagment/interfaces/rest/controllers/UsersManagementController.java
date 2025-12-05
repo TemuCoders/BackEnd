@@ -19,15 +19,15 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Users", description = "User Management Endpoints")
-public class UsersController {
+public class UsersManagementController {
 
     private final UserManagementContextFacade userManagementFacade;
     private final UserCommandService userCommandService;
     private final UserQueryService userQueryService;
 
-    public UsersController(UserManagementContextFacade userManagementFacade,
-                           UserCommandService userCommandService,
-                           UserQueryService userQueryService) {
+    public UsersManagementController(UserManagementContextFacade userManagementFacade,
+                                     UserCommandService userCommandService,
+                                     UserQueryService userQueryService) {
         this.userManagementFacade = userManagementFacade;
         this.userCommandService = userCommandService;
         this.userQueryService = userQueryService;

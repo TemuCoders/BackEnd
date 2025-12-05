@@ -8,7 +8,7 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.*;
 
 import java.util.Date;
 
-@Entity
+@Entity(name = "UserManagementUser")
 @Table(name = "users")
 public class User extends AuditableAbstractAggregateRoot<User> {
 

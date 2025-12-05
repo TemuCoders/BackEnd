@@ -8,17 +8,17 @@ import pe.edu.upc.center.workstation.userManagment.domain.model.aggregates.User;
 import pe.edu.upc.center.workstation.userManagment.domain.model.commands.user.*;
 import pe.edu.upc.center.workstation.userManagment.domain.model.valueobjects.EmailAddress;
 import pe.edu.upc.center.workstation.userManagment.domain.services.UserCommandService;
-import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserRepository;
+import pe.edu.upc.center.workstation.userManagment.infrastructure.persistence.jpa.repositories.UserManagementRepository;
 
 import java.util.Optional;
 
 @Service
-public class UserCommandServiceImpl implements UserCommandService {
+public class UserManagementCommandServiceImpl implements UserCommandService {
 
-    private final UserRepository userRepository;
+    private final UserManagementRepository userManagementRepository;
 
-    public UserCommandServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserManagementCommandServiceImpl(UserManagementRepository userManagementRepository) {
+        this.userManagementRepository = userManagementRepository;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Transactional
     public Optional<User> handle(RegisterUserCommand command) {
         var email = new EmailAddress(command.email());
-        if (userRepository.existsByEmail(email)) {
+        if (userManagementRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("User with email already exists");
         }
 
@@ -55,7 +55,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         );
 
         try {
-            userRepository.save(user);
+            userManagementRepository.save(user);
             return Optional.of(user);
         } catch (Exception e) {
             throw new PersistenceException("[UserCommandServiceImpl] Error while saving user: " + e.getMessage());
@@ -65,13 +65,13 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     @Transactional
     public Optional<User> handle(UpdateUserProfileCommand command) {
-        var user = userRepository.findById(command.userId())
+        var user = userManagementRepository.findById(command.userId())
                 .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
 
         user.updateProfile(command.name(), command.age(), command.location(), command.photo());
 
         try {
-            return Optional.of(userRepository.save(user));
+            return Optional.of(userManagementRepository.save(user));
         } catch (Exception e) {
             throw new PersistenceException("[UserCommandServiceImpl] Error while updating user: " + e.getMessage());
         }
@@ -80,11 +80,11 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     @Transactional
     public void handle(SetUserRoleCommand command) {
-        var user = userRepository.findById(command.userId())
+        var user = userManagementRepository.findById(command.userId())
                 .orElseThrow(() -> new NotFoundIdException(User.class, command.userId()));
 
         user.assignRole(command.roleName());
-        userRepository.save(user);
+        userManagementRepository.save(user);
     }
 
 
