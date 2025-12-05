@@ -20,7 +20,7 @@ public class UserAclClient {
 
     public UserAclClient(
             RestClient.Builder restClientBuilder,
-            @Value("${app.users.api.base-url:http://localhost:8091}") String baseUrl
+            @Value("${app.users.api.base-url:https://backend-3iv0.onrender.com}") String baseUrl
     ) {
         this.baseUrl = baseUrl;
         this.restClient = restClientBuilder.baseUrl(baseUrl).build();
